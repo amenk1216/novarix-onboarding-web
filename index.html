@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOVARIX GLOBAL - Formulir Onboarding & Data Karyawan</title>
+  <meta name="description" content="Formulir resmi onboarding dan data personal karyawan Novarix Global Jakarta (Ref: NG-HR-003).">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient-glow"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-logo-icon">N</div>
+        <div class="brand-text">
+          <h1>NOVARIX GLOBAL</h1>
+          <p>JAKARTA &bull; HR OPERATIONS</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-outline-primary btn-sm" id="btnAutofill" title="Isi otomatis contoh data dari dokumen PDF">
+          ⚡ Autofill Contoh Data
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnOpenConfig" title="Pengaturan Web App Google Apps Script">
+          ⚙️ GAS API
+        </button>
+        <span class="badge-tag info" id="statusBadge">
+          <span class="status-dot"></span> Ready
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- Hero Card -->
+    <section class="form-hero-card">
+      <div class="hero-meta-row">
+        <span class="hero-badge">Onboarding Portal</span>
+        <span class="hero-doc-ref">Ref: NG-HR-003 | Ver: 3.0</span>
+      </div>
+      <h2>Employee Particulars &amp; Onboarding Form</h2>
+      <p class="hero-desc">
+        Mohon lengkapi seluruh bagian formulir ini secara akurat. Data ini diperlukan untuk kepatuhan undang-undang ketenagakerjaan, pendaftaran BPJS, verifikasi latar belakang, dan administrasi payroll internal.
+      </p>
+    </section>
+
+    <!-- Stepper Navigation -->
+    <nav class="stepper-nav" aria-label="Progress Tahapan">
+      <div class="stepper-progress-fill" id="stepperProgressFill"></div>
+      <ol class="stepper-list">
+        <li class="step-item active" data-step="1" id="stepIndicator1">
+          <div class="step-bubble">1</div>
+          <span class="step-label">Data Diri &amp; Pajak</span>
+        </li>
+        <li class="step-item" data-step="2" id="stepIndicator2">
+          <div class="step-bubble">2</div>
+          <span class="step-label">Payroll &amp; Keluarga</span>
+        </li>
+        <li class="step-item" data-step="3" id="stepIndicator3">
+          <div class="step-bubble">3</div>
+          <span class="step-label">Pendidikan &amp; Karier</span>
+        </li>
+        <li class="step-item" data-step="4" id="stepIndicator4">
+          <div class="step-bubble">4</div>
+          <span class="step-label">Deklarasi Medis &amp; Hukum</span>
+        </li>
+        <li class="step-item" data-step="5" id="stepIndicator5">
+          <div class="step-bubble">5</div>
+          <span class="step-label">Persetujuan &amp; TTD</span>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- FORM START -->
+    <form id="onboardingForm" novalidate>
+
+      <!-- ================= STEP 1: PROFIL & STATUTORI ================= -->
+      <div class="form-step-content active" id="stepContent1">
+        
+        <!-- SECTION 1: PERSONAL PARTICULARS -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 01</span>
+              <div>
+                <h3>Personal Particulars</h3>
+                <p class="section-subtitle">Data identitas pribadi sesuai KTP resmi</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="col-6 form-group">
+              <label class="form-label" for="fullName">
+                Full Name (As per KTP) <span class="required-star">*</span>
+              </label>
+              <input type="text" id="fullName" name="fullName" class="form-input" placeholder="Contoh: Armendri" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="preferredName">
+                Preferred Name / Panggilan
+              </label>
+              <input type="text" id="preferredName" name="preferredName" class="form-input" placeholder="Contoh: Armend">
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="nik">
+                KTP Number (NIK) <span class="required-star">*</span>
+                <span class="label-sub">16 Digit</span>
+              </label>
+              <input type="text" id="nik" name="nik" class="form-input" maxlength="16" placeholder="Contoh: 3173051203811001" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="passportNo">
+                Passport No / Expiry Date
+              </label>
+              <input type="text" id="passportNo" name="passportNo" class="form-input" placeholder="Contoh: X1234567 / 12-2028 (Opsional)">
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="placeOfBirth">
+                Place of Birth <span class="required-star">*</span>
+              </label>
+              <input type="text" id="placeOfBirth" name="placeOfBirth" class="form-input" placeholder="Contoh: Binjai" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="dateOfBirth">
+                Date of Birth <span class="required-star">*</span>
+              </label>
+              <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-input" required>
+            </div>
+
+            <div class="col-4 form-group">
+              <label class="form-label">
+                Gender <span class="required-star">*</span>
+              </label>
+              <div class="radio-group-cards">
+                <label class="radio-card">
+                  <input type="radio" name="gender" value="Male" checked> Pria (Male)
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="gender" value="Female"> Wanita (Female)
+                </label>
+              </div>
+            </div>
+
+            <div class="col-4 form-group">
+              <label class="form-label" for="bloodGroup">
+                Blood Group (Gol. Darah)
+              </label>
+              <select id="bloodGroup" name="bloodGroup" class="form-select">
+                <option value="O">O</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="AB">AB</option>
+                <option value="-">-</option>
+              </select>
+            </div>
+
+            <div class="col-4 form-group">
+              <label class="form-label" for="religion">
+                Religion (For THR) <span class="required-star">*</span>
+              </label>
+              <select id="religion" name="religion" class="form-select" required>
+                <option value="Islam">Islam</option>
+                <option value="Kristen Protestan">Kristen Protestan</option>
+                <option value="Katolik">Katolik</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Buddha">Buddha</option>
+                <option value="Konghucu">Konghucu</option>
+              </select>
+            </div>
+
+            <div class="col-12 form-group">
+              <label class="form-label">
+                Marital Status <span class="required-star">*</span>
+              </label>
+              <div class="radio-group-cards">
+                <label class="radio-card">
+                  <input type="radio" name="maritalStatus" value="Single"> Single
+                </label>
+                <label class="radio-card selected">
+                  <input type="radio" name="maritalStatus" value="Married" checked> Married
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="maritalStatus" value="Divorced"> Divorced
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="maritalStatus" value="Widowed"> Widowed
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: CONTACT DETAILS -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 02</span>
+              <div>
+                <h3>Contact Details</h3>
+                <p class="section-subtitle">Alamat tempat tinggal dan kontak yang dapat dihubungi</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="col-8 form-group">
+              <label class="form-label" for="permanentAddress">
+                Permanent Address (KTP) <span class="required-star">*</span>
+              </label>
+              <textarea id="permanentAddress" name="permanentAddress" class="form-textarea" placeholder="Alamat lengkap sesuai KTP..." required></textarea>
+            </div>
+
+            <div class="col-4 form-group">
+              <label class="form-label" for="permanentCityPostal">
+                City / Postal Code (KTP) <span class="required-star">*</span>
+              </label>
+              <input type="text" id="permanentCityPostal" name="permanentCityPostal" class="form-input" placeholder="Contoh: Jakarta Selatan / 12230" required>
+            </div>
+
+            <div class="col-12">
+              <label class="radio-card" style="display:inline-flex;">
+                <input type="checkbox" id="sameAddressCheck"> Alamat domisili saat ini sama dengan alamat KTP
+              </label>
+            </div>
+
+            <div class="col-8 form-group">
+              <label class="form-label" for="currentAddress">
+                Current Address (Domisili Sekarang) <span class="required-star">*</span>
+              </label>
+              <textarea id="currentAddress" name="currentAddress" class="form-textarea" placeholder="Alamat tempat tinggal sekarang..." required></textarea>
+            </div>
+
+            <div class="col-4 form-group">
+              <label class="form-label" for="currentCityPostal">
+                City / Postal Code (Domisili) <span class="required-star">*</span>
+              </label>
+              <input type="text" id="currentCityPostal" name="currentCityPostal" class="form-input" placeholder="Contoh: Jakarta Selatan / 12230" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="mobileNumber">
+                Mobile Number (WhatsApp) <span class="required-star">*</span>
+              </label>
+              <input type="tel" id="mobileNumber" name="mobileNumber" class="form-input" placeholder="Contoh: 081317028494" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="personalEmail">
+                Personal Email <span class="required-star">*</span>
+              </label>
+              <input type="email" id="personalEmail" name="personalEmail" class="form-input" placeholder="Contoh: armendri@gmail.com" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: STATUTORY & TAX INFORMATION -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 03</span>
+              <div>
+                <h3>Statutory &amp; Tax Information</h3>
+                <p class="section-subtitle">Nomor identitas perpajakan dan jaminan sosial ketenagakerjaan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="col-6 form-group">
+              <label class="form-label" for="npwp">
+                NPWP (Tax ID) <span class="required-star">*</span>
+              </label>
+              <input type="text" id="npwp" name="npwp" class="form-input" placeholder="Contoh: 59.442.056.4-009.000" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="noKk">
+                Nomor KK (Family Card) <span class="required-star">*</span>
+              </label>
+              <input type="text" id="noKk" name="noKk" class="form-input" maxlength="16" placeholder="Contoh: 3174050806210013" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="bpjsKesehatan">
+                BPJS Kesehatan (Health) <span class="required-star">*</span>
+              </label>
+              <input type="text" id="bpjsKesehatan" name="bpjsKesehatan" class="form-input" placeholder="Contoh: 0001654602085" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="bpjsKetenagakerjaan">
+                BPJS Ketenagakerjaan (Labor)
+              </label>
+              <input type="text" id="bpjsKetenagakerjaan" name="bpjsKetenagakerjaan" class="form-input" placeholder="Nomor KPJ (jika sudah ada)">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= STEP 2: PAYROLL & KELUARGA ================= -->
+      <div class="form-step-content" id="stepContent2">
+
+        <!-- SECTION 4: BANKING DETAILS -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 04</span>
+              <div>
+                <h3>Banking Details (For Payroll)</h3>
+                <p class="section-subtitle">Rekening bank untuk penggajian bulanan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="col-6 form-group">
+              <label class="form-label" for="bankName">
+                Bank Name <span class="required-star">*</span>
+              </label>
+              <input type="text" id="bankName" name="bankName" class="form-input" placeholder="Contoh: BCA / Mandiri / BNI" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="bankBranch">
+                Branch Name / Location <span class="required-star">*</span>
+              </label>
+              <input type="text" id="bankBranch" name="bankBranch" class="form-input" placeholder="Contoh: KCU SCBD" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="accountHolderName">
+                Account Holder Name <span class="required-star">*</span>
+                <span class="label-sub">Harus sesuai nama rekening</span>
+              </label>
+              <input type="text" id="accountHolderName" name="accountHolderName" class="form-input" placeholder="Contoh: Armendri" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="accountNumber">
+                Account Number <span class="required-star">*</span>
+              </label>
+              <input type="text" id="accountNumber" name="accountNumber" class="form-input" placeholder="Contoh: 0060448183" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: FAMILY MEMBERS & DEPENDENTS -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 05</span>
+              <div>
+                <h3>Family Members &amp; Dependents</h3>
+                <p class="section-subtitle">Data tanggungan untuk perhitungan BPJS dan status PTKP Pajak</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnAddFamily">
+              + Tambah Anggota Keluarga
+            </button>
+          </div>
+
+          <div id="familyRepeater" class="repeater-container">
+            <!-- Dynamic items rendered by JS -->
+          </div>
+        </div>
+
+        <!-- SECTION 6: EMERGENCY CONTACTS -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 06</span>
+              <div>
+                <h3>Emergency Contacts</h3>
+                <p class="section-subtitle">Kontak darurat utama jika terjadi keadaan mendesak di tempat kerja</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="col-6 form-group">
+              <label class="form-label" for="emergencyName">
+                Contact Name <span class="required-star">*</span>
+              </label>
+              <input type="text" id="emergencyName" name="emergencyName" class="form-input" placeholder="Contoh: Raudoh" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="emergencyRelationship">
+                Relationship <span class="required-star">*</span>
+              </label>
+              <input type="text" id="emergencyRelationship" name="emergencyRelationship" class="form-input" placeholder="Contoh: Spouse (Wife) / Orang Tua" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="emergencyMobile">
+                Mobile Number <span class="required-star">*</span>
+              </label>
+              <input type="tel" id="emergencyMobile" name="emergencyMobile" class="form-input" placeholder="Contoh: 081806782414" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="emergencyAddress">
+                Address <span class="required-star">*</span>
+              </label>
+              <input type="text" id="emergencyAddress" name="emergencyAddress" class="form-input" placeholder="Alamat lengkap kontak darurat" required>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= STEP 3: PENDIDIKAN & KARIER ================= -->
+      <div class="form-step-content" id="stepContent3">
+
+        <!-- SECTION 7: EDUCATIONAL BACKGROUND -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 07</span>
+              <div>
+                <h3>Educational Background / Professional Certificates</h3>
+                <p class="section-subtitle">Riwayat pendidikan formal dari jenjang tertinggi</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnAddEducation">
+              + Tambah Pendidikan
+            </button>
+          </div>
+
+          <div id="educationRepeater" class="repeater-container">
+            <!-- Dynamic items rendered by JS -->
+          </div>
+        </div>
+
+        <!-- SECTION 8: EMPLOYMENT HISTORY -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 08</span>
+              <div>
+                <h3>Employment History</h3>
+                <p class="section-subtitle">Pengalaman kerja terdahulu dimulai dari perusahaan terakhir</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnAddEmployment">
+              + Tambah Pengalaman Kerja
+            </button>
+          </div>
+
+          <div id="employmentRepeater" class="repeater-container">
+            <!-- Dynamic items rendered by JS -->
+          </div>
+        </div>
+
+        <!-- SECTION 9: PROFESSIONAL REFERENCES -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 09</span>
+              <div>
+                <h3>Professional References</h3>
+                <p class="section-subtitle">Minimal 2 referensi profesional (atasan langsung / rekan kerja, bukan keluarga)</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnAddReference">
+              + Tambah Referensi
+            </button>
+          </div>
+
+          <div id="referenceRepeater" class="repeater-container">
+            <!-- Dynamic items rendered by JS -->
+          </div>
+        </div>
+
+        <!-- SECTION 10: LANGUAGE & SKILL PROFICIENCY -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 10</span>
+              <div>
+                <h3>Language &amp; Skill Proficiency</h3>
+                <p class="section-subtitle">Tingkat kemahiran bahasa lisan dan tulisan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- English -->
+            <div class="col-4 form-group">
+              <label class="form-label">Bahasa Inggris (English)</label>
+              <div style="display:flex; gap:8px;">
+                <select name="langEnglishSpoken" id="langEnglishSpoken" class="form-select" title="Spoken">
+                  <option value="Average">Lisan: Average</option>
+                  <option value="Good">Lisan: Good</option>
+                  <option value="Weak">Lisan: Weak</option>
+                </select>
+                <select name="langEnglishWritten" id="langEnglishWritten" class="form-select" title="Written">
+                  <option value="Good">Tulisan: Good</option>
+                  <option value="Average">Tulisan: Average</option>
+                  <option value="Weak">Tulisan: Weak</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Bahasa Indonesia -->
+            <div class="col-4 form-group">
+              <label class="form-label">Bahasa Indonesia</label>
+              <div style="display:flex; gap:8px;">
+                <select name="langIndoSpoken" id="langIndoSpoken" class="form-select">
+                  <option value="Good">Lisan: Good</option>
+                  <option value="Average">Lisan: Average</option>
+                  <option value="Weak">Lisan: Weak</option>
+                </select>
+                <select name="langIndoWritten" id="langIndoWritten" class="form-select">
+                  <option value="Good">Tulisan: Good</option>
+                  <option value="Average">Tulisan: Average</option>
+                  <option value="Weak">Tulisan: Weak</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Mandarin -->
+            <div class="col-4 form-group">
+              <label class="form-label">Mandarin (Optional)</label>
+              <div style="display:flex; gap:8px;">
+                <select name="langMandarinSpoken" id="langMandarinSpoken" class="form-select">
+                  <option value="Weak">Lisan: Weak</option>
+                  <option value="Average">Lisan: Average</option>
+                  <option value="Good">Lisan: Good</option>
+                  <option value="-">Lisan: Tidak Bisa</option>
+                </select>
+                <select name="langMandarinWritten" id="langMandarinWritten" class="form-select">
+                  <option value="Weak">Tulisan: Weak</option>
+                  <option value="Average">Tulisan: Average</option>
+                  <option value="Good">Tulisan: Good</option>
+                  <option value="-">Tulisan: Tidak Bisa</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= STEP 4: DEKLARASI MEDIS & HUKUM ================= -->
+      <div class="form-step-content" id="stepContent4">
+
+        <!-- SECTION 11: MEDICAL DECLARATION -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 11</span>
+              <div>
+                <h3>Medical Declaration</h3>
+                <p class="section-subtitle">Deklarasi kondisi kesehatan (bersifat rahasia untuk keselamatan kerja)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="declaration-item">
+            <div class="declaration-question">
+              Pernahkah Anda menderita atau sedang menjalani perawatan untuk kondisi medis kronis/serius (misal: penyakit jantung, asma, epilepsi, diabetes, kondisi psikologis)?
+            </div>
+            <div class="declaration-switch">
+              <button type="button" class="choice-btn active-no" data-target="medicalSeriousCondition" data-val="No">No</button>
+              <button type="button" class="choice-btn" data-target="medicalSeriousCondition" data-val="Yes">Yes</button>
+              <input type="hidden" id="medicalSeriousCondition" name="medicalSeriousCondition" value="No">
+            </div>
+          </div>
+
+          <div class="declaration-item">
+            <div class="declaration-question">
+              Pernahkah Anda menjalani operasi besar atau dirawat inap di rumah sakit dalam kurun waktu 5 tahun terakhir?
+            </div>
+            <div class="declaration-switch">
+              <button type="button" class="choice-btn active-no" data-target="medicalSurgery" data-val="No">No</button>
+              <button type="button" class="choice-btn" data-target="medicalSurgery" data-val="Yes">Yes</button>
+              <input type="hidden" id="medicalSurgery" name="medicalSurgery" value="No">
+            </div>
+          </div>
+
+          <div class="declaration-item">
+            <div class="declaration-question">
+              Apakah Anda memiliki alergi parah (makanan, obat-obatan, lingkungan) yang memerlukan tindakan penanganan darurat?
+            </div>
+            <div class="declaration-switch">
+              <button type="button" class="choice-btn active-no" data-target="medicalAllergies" data-val="No">No</button>
+              <button type="button" class="choice-btn" data-target="medicalAllergies" data-val="Yes">Yes</button>
+              <input type="hidden" id="medicalAllergies" name="medicalAllergies" value="No">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label" for="medicalDetails">
+              Jika Anda menjawab 'Yes' pada salah satu pertanyaan di atas, jelaskan rincian dan obat yang sedang dikonsumsi:
+            </label>
+            <textarea id="medicalDetails" name="medicalDetails" class="form-textarea" placeholder="Tuliskan keterangan detail riwayat medis jika ada..."></textarea>
+          </div>
+        </div>
+
+        <!-- SECTION 12: CRIMINAL & LEGAL DECLARATION -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 12</span>
+              <div>
+                <h3>Criminal &amp; Legal Declaration</h3>
+                <p class="section-subtitle">Deklarasi integritas kepatuhan hukum dan riwayat tindak pidana</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="declaration-item">
+            <div class="declaration-question">
+              Pernahkah Anda dihukum atas pelanggaran pidana di pengadilan hukum di negara mana pun?
+            </div>
+            <div class="declaration-switch">
+              <button type="button" class="choice-btn active-no" data-target="legalConvicted" data-val="No">No</button>
+              <button type="button" class="choice-btn" data-target="legalConvicted" data-val="Yes">Yes</button>
+              <input type="hidden" id="legalConvicted" name="legalConvicted" value="No">
+            </div>
+          </div>
+
+          <div class="declaration-item">
+            <div class="declaration-question">
+              Apakah saat ini ada tuntutan pidana atau penyelidikan kepolisian yang sedang berlangsung terhadap Anda?
+            </div>
+            <div class="declaration-switch">
+              <button type="button" class="choice-btn active-no" data-target="legalPendingCharges" data-val="No">No</button>
+              <button type="button" class="choice-btn" data-target="legalPendingCharges" data-val="Yes">Yes</button>
+              <input type="hidden" id="legalPendingCharges" name="legalPendingCharges" value="No">
+            </div>
+          </div>
+
+          <div class="declaration-item">
+            <div class="declaration-question">
+              Pernahkah Anda diberhentikan, diskors, atau diminta mengundurkan diri dari suatu pekerjaan karena pelanggaran tata tertib, penipuan, pelecehan, atau pelanggaran kepercayaan?
+            </div>
+            <div class="declaration-switch">
+              <button type="button" class="choice-btn active-no" data-target="legalDismissed" data-val="No">No</button>
+              <button type="button" class="choice-btn" data-target="legalDismissed" data-val="Yes">Yes</button>
+              <input type="hidden" id="legalDismissed" name="legalDismissed" value="No">
+            </div>
+          </div>
+
+          <div class="declaration-item">
+            <div class="declaration-question">
+              Pernahkah Anda dinyatakan pailit/bangkrut atau memiliki putusan pengadilan mengenai utang piutang terhadap Anda?
+            </div>
+            <div class="declaration-switch">
+              <button type="button" class="choice-btn active-no" data-target="legalBankrupt" data-val="No">No</button>
+              <button type="button" class="choice-btn" data-target="legalBankrupt" data-val="Yes">Yes</button>
+              <input type="hidden" id="legalBankrupt" name="legalBankrupt" value="No">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label" for="legalDetails">
+              Jika Anda menjawab 'Yes' pada salah satu pertanyaan di atas, jelaskan tanggal, lokasi, dan keadaannya:
+            </label>
+            <textarea id="legalDetails" name="legalDetails" class="form-textarea" placeholder="Tuliskan keterangan hukum jika ada..."></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= STEP 5: PERSETUJUAN & TANDA TANGAN ================= -->
+      <div class="form-step-content" id="stepContent5">
+
+        <!-- SECTION 13: COMPREHENSIVE EMPLOYEE DECLARATION & CONSENT -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-title">
+              <span class="section-number">SEC 13</span>
+              <div>
+                <h3>Comprehensive Employee Declaration &amp; Consent</h3>
+                <p class="section-subtitle">Pernyataan kebenaran data, persetujuan verifikasi, dan kerahasiaan</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-subtle); border-radius:var(--radius-md); padding:1.25rem; font-size:0.85rem; line-height:1.6; margin-bottom:1.5rem; color:#334155;">
+            <ol style="padding-left: 1.25rem; display:flex; flex-direction:column; gap:0.6rem;">
+              <li><strong>Accuracy of Information:</strong> Semua informasi yang diberikan dalam formulir ini serta lampirannya adalah benar, lengkap, dan akurat.</li>
+              <li><strong>Termination Clause:</strong> Saya memahami bahwa pernyataan palsu atau kelalaian yang disengaja dapat menjadi dasar pemutusan hubungan kerja seketika tanpa peringatan atau pesangon.</li>
+              <li><strong>Background Verification:</strong> Saya memberi wewenang kepada Novarix Global untuk melakukan pemeriksaan latar belakang (pendidikan, referensi, hukum, keuangan).</li>
+              <li><strong>Data Privacy &amp; Processing Consent:</strong> Saya menyetujui pengumpulan, penyimpanan, dan pemrosesan data pribadi saya dan tanggungan untuk keperluan SDM, payroll, pajak, dan BPJS sesuai peraturan perlindungan data di Indonesia.</li>
+              <li><strong>Confidentiality (NDA):</strong> Saya setuju menjaga kerahasiaan seluruh informasi bisnis, metodologi, dan rahasia dagang Novarix Global.</li>
+            </ol>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label class="radio-card selected" style="cursor: pointer;">
+              <input type="checkbox" id="declarationConsent" required checked>
+              <span><strong>Saya menyatakan telah membaca, memahami, dan menyetujui seluruh klausul pernyataan di atas.</strong> <span class="required-star">*</span></span>
+            </label>
+          </div>
+
+          <div class="form-grid">
+            <div class="col-6 form-group">
+              <label class="form-label" for="printedName">
+                Printed Name (Nama Lengkap) <span class="required-star">*</span>
+              </label>
+              <input type="text" id="printedName" name="printedName" class="form-input" placeholder="Nama jelas penandatangan" required>
+            </div>
+
+            <div class="col-6 form-group">
+              <label class="form-label" for="declarationDate">
+                Date (Tanggal Pengisian) <span class="required-star">*</span>
+              </label>
+              <input type="date" id="declarationDate" name="declarationDate" class="form-input" required>
+            </div>
+
+            <div class="col-12 form-group">
+              <label class="form-label">
+                Digital Employee Signature (Tanda Tangan Digital) <span class="required-star">*</span>
+                <span class="label-sub">Tanda tangani di area kanvas di bawah menggunakan mouse / layar sentuh</span>
+              </label>
+              
+              <div class="signature-box-wrapper" id="signatureBox">
+                <canvas id="signatureCanvas" width="700" height="180"></canvas>
+                <div class="signature-controls">
+                  <span class="signature-note">Gunakan sentuhan jari atau kursor untuk menandatangani</span>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btnClearSignature">
+                    🔄 Hapus &amp; Ulangi TTD
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- WIZARD FOOTER NAVIGATION -->
+      <div class="wizard-footer">
+        <button type="button" class="btn btn-secondary" id="btnPrevStep" style="visibility: hidden;">
+          &larr; Sebelumnya
+        </button>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn btn-secondary" id="btnReviewPreview">
+            👁️ Ringkasan / Print
+          </button>
+          <button type="button" class="btn btn-primary" id="btnNextStep">
+            Lanjut &rarr;
+          </button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitForm" style="display: none;">
+            🚀 Kirim Formulir Onboarding
+          </button>
+        </div>
+      </div>
+
+    </form>
+    <!-- FORM END -->
+
+  </main>
+
+  <!-- MODAL: GOOGLE APPS SCRIPT URL CONFIG -->
+  <div class="modal-overlay" id="configModal">
+    <div class="modal-box">
+      <h3 class="modal-title">⚙️ Konfigurasi Backend Google Apps Script</h3>
+      <p class="modal-desc">
+        Hubungkan Web App Vercel ini ke endpoint Google Apps Script <code>doPost(e)</code> Anda.
+      </p>
+      
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label" for="gasUrlInput">URL Google Apps Script Web App</label>
+        <input type="url" id="gasUrlInput" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+        <span class="label-sub" style="margin-top:4px; display:block;">
+          Didapatkan setelah klik <strong>Deploy &gt; New deployment &gt; Web app (Anyone)</strong> di Google Apps Script.
+        </span>
+      </div>
+
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:var(--radius-md); padding:12px; font-size:0.8rem; margin-bottom:1.5rem; color:#475569;">
+        <strong>💡 Tips Pengujian:</strong> Jika URL dikosongkan, formulir akan otomatis berjalan dalam <em>Simulasi Mode Demo</em> (menyimpan di memori browser dan menampilkan pratinjau data).
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn btn-secondary" id="btnCloseConfig">Batal</button>
+        <button type="button" class="btn btn-primary" id="btnSaveConfig">Simpan Konfigurasi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SUBMISSION SUCCESS -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-box" style="text-align: center;">
+      <div style="width:64px; height:64px; background:#ecfdf5; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; font-size:2rem; border:2px solid #a7f3d0;">
+        ✅
+      </div>
+      <h3 class="modal-title" style="color:#065f46;">Formulir Onboarding Berhasil Dikirim!</h3>
+      <p class="modal-desc" id="successDesc">
+        Data karyawan dan seluruh lampiran telah berhasil dicatat ke sistem database Google Sheets.
+      </p>
+
+      <div style="background:var(--bg-subtle); border-radius:var(--radius-md); padding:12px; margin-bottom:1.5rem; font-family:'JetBrains Mono', monospace; font-size:0.88rem; color:#1e293b;">
+        <div>Submission ID: <strong id="successId">-</strong></div>
+        <div style="font-size:0.75rem; color:#64748b; margin-top:4px;" id="successTime">-</div>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary" id="btnPrintSubmission">
+          🖨️ Cetak / Simpan PDF
+        </button>
+        <button type="button" class="btn btn-primary" id="btnCloseSuccess">
+          Selesai
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Script logic -->
+  <script src="app.js"></script>
+</body>
+</html>
