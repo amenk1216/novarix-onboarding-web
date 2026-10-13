@@ -244,6 +244,7 @@ body {
 
 /* Stepper Progress Bar */
 .stepper-nav {
+  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
@@ -800,9 +801,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  pointer-events: none;
 }
 
 .toast {
+  pointer-events: auto;
   background: #ffffff;
   border-radius: var(--radius-md);
   padding: 12px 18px;
