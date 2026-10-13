@@ -11,7 +11,920 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css">
+  <style>
+/* ==========================================================================
+   NOVARIX GLOBAL - Modern Enterprise Design System
+   Document Ref: NG-HR-003 | Employee Particulars & Onboarding Form
+   ========================================================================== */
+
+:root {
+  --primary: #1e3a8a;
+  --primary-light: #2563eb;
+  --primary-dark: #172554;
+  --accent: #0ea5e9;
+  --accent-glow: rgba(14, 165, 233, 0.25);
+  
+  --success: #10b981;
+  --success-bg: #ecfdf5;
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-focus: #3b82f6;
+
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-float: 0 20px 35px -10px rgba(30, 58, 138, 0.15);
+
+  --transition-fast: 0.18s ease;
+  --transition-normal: 0.28s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Background Atmosphere */
+.ambient-glow {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  max-width: 1400px;
+  height: 480px;
+  background: radial-gradient(circle at 50% 10%, rgba(37, 99, 235, 0.12) 0%, rgba(14, 165, 233, 0.05) 50%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header & Top Bar */
+.app-header {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 50;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.brand-text h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--primary-dark);
+  line-height: 1.2;
+}
+
+.brand-text p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-tag.info {
+  background: #eff6ff;
+  color: var(--primary-light);
+  border: 1px solid #bfdbfe;
+}
+
+.badge-tag.connected {
+  background: var(--success-bg);
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--success);
+  display: inline-block;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Layout Container */
+.main-container {
+  max-width: 1000px;
+  margin: 1.5rem auto 3rem;
+  padding: 0 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Form Hero Card */
+.form-hero-card {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 60%, #0369a1 100%);
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem 2.25rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-float);
+  position: relative;
+  overflow: hidden;
+}
+
+.form-hero-card::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  bottom: -60px;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.hero-badge {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.hero-doc-ref {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: monospace;
+}
+
+.form-hero-card h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+}
+
+.hero-desc {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 780px;
+  line-height: 1.6;
+}
+
+/* Stepper Progress Bar */
+.stepper-nav {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.stepper-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  position: relative;
+}
+
+.stepper-list::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: var(--border-color);
+  z-index: 1;
+}
+
+.stepper-progress-fill {
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  height: 2px;
+  background: var(--primary-light);
+  z-index: 2;
+  transition: width var(--transition-normal);
+}
+
+.step-item {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.step-bubble {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.step-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+.step-item.active .step-bubble {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.step-item.active .step-label {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.step-item.completed .step-bubble {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+.step-item.completed .step-label {
+  color: var(--text-main);
+}
+
+/* Card Section Form */
+.form-step-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.form-step-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.section-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-md);
+}
+
+.section-header {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.section-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-number {
+  background: #eff6ff;
+  color: var(--primary-light);
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #bfdbfe;
+}
+
+.section-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.section-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Form Grids & Controls */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.25rem;
+}
+
+.col-12 { grid-column: span 12; }
+.col-8  { grid-column: span 8; }
+.col-6  { grid-column: span 6; }
+.col-4  { grid-column: span 4; }
+.col-3  { grid-column: span 3; }
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-label .required-star {
+  color: var(--danger);
+  margin-left: 3px;
+}
+
+.form-label .label-sub {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: var(--text-main);
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  background-color: #fafcff;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-light);
+}
+
+.form-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Radio & Checkbox Groups */
+.radio-group-cards {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.radio-card {
+  flex: 1;
+  min-width: 110px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.radio-card:hover {
+  border-color: #93c5fd;
+  background: #f8fafc;
+}
+
+.radio-card input[type="radio"],
+.radio-card input[type="checkbox"] {
+  accent-color: var(--primary-light);
+  width: 16px;
+  height: 16px;
+}
+
+.radio-card.selected {
+  border-color: var(--primary-light);
+  background: #eff6ff;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+/* Dynamic Repeater Items */
+.repeater-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.repeater-card {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.repeater-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.repeater-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: #dbeafe;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-remove-row {
+  background: transparent;
+  color: var(--danger);
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.btn-remove-row:hover {
+  background: var(--danger-bg);
+}
+
+/* Declarations (Yes/No Question Cards) */
+.declaration-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+  gap: 1.5rem;
+}
+
+.declaration-item:last-child {
+  border-bottom: none;
+}
+
+.declaration-question {
+  font-size: 0.88rem;
+  color: var(--text-main);
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.declaration-switch {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.choice-btn {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-color);
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.choice-btn.active-no {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #334155;
+}
+
+.choice-btn.active-yes {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Digital Signature Canvas */
+.signature-box-wrapper {
+  background: #ffffff;
+  border: 2px dashed #94a3b8;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  transition: border-color var(--transition-fast);
+}
+
+.signature-box-wrapper.has-signature {
+  border-color: var(--success);
+  border-style: solid;
+}
+
+#signatureCanvas {
+  width: 100%;
+  height: 180px;
+  background: #ffffff;
+  cursor: crosshair;
+  border-radius: var(--radius-sm);
+  touch-action: none;
+}
+
+.signature-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.signature-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #172554 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-subtle);
+  border-color: #cbd5e1;
+}
+
+.btn-outline-primary {
+  background: transparent;
+  color: var(--primary-light);
+  border-color: #93c5fd;
+}
+
+.btn-outline-primary:hover {
+  background: #eff6ff;
+  border-color: var(--primary-light);
+}
+
+.btn-sm {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Wizard Navigation Bar */
+.wizard-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Modal Popup */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1.25rem;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-box {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  max-width: 580px;
+  width: 100%;
+  padding: 2rem;
+  box-shadow: var(--shadow-float);
+  animation: modalScale 0.22s ease-out;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin-bottom: 0.5rem;
+}
+
+.modal-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Toast Notification */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-left: 4px solid var(--primary);
+  animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 380px;
+}
+
+.toast.success { border-left-color: var(--success); }
+.toast.error   { border-left-color: var(--danger); }
+.toast.warning { border-left-color: var(--warning); }
+
+@keyframes slideInToast {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .col-12, .col-8, .col-6, .col-4, .col-3 {
+    grid-column: span 12;
+  }
+  
+  .stepper-list {
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  
+  .step-label {
+    display: none;
+  }
+
+  .step-item.active .step-label {
+    display: block;
+    position: absolute;
+    top: 48px;
+    font-size: 0.72rem;
+  }
+
+  .form-hero-card {
+    padding: 1.5rem;
+  }
+
+  .section-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .wizard-footer {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .wizard-footer .btn {
+    width: 100%;
+  }
+}
+
+/* Print Friendly Styles replicating the physical document */
+@media print {
+  .app-header, .ambient-glow, .stepper-nav, .wizard-footer, .header-actions, .toast-container, .btn-remove-row, .btn-outline-primary {
+    display: none !important;
+  }
+  
+  body, .main-container {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #000 !important;
+  }
+
+  .section-card {
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 15px !important;
+    padding: 12px !important;
+  }
+
+  .form-step-content {
+    display: block !important;
+  }
+}
+
+</style>
 </head>
 <body>
   <div class="ambient-glow"></div>
@@ -30,11 +943,8 @@
         <button type="button" class="btn btn-outline-primary btn-sm" id="btnAutofill" title="Isi otomatis contoh data dari dokumen PDF">
           ⚡ Autofill Contoh Data
         </button>
-        <button type="button" class="btn btn-secondary btn-sm" id="btnOpenConfig" title="Pengaturan Web App Google Apps Script">
-          ⚙️ GAS API
-        </button>
-        <span class="badge-tag info" id="statusBadge">
-          <span class="status-dot"></span> Ready
+        <span class="badge-tag connected" id="statusBadge">
+          <span class="status-dot"></span> GAS Connected
         </span>
       </div>
     </div>
@@ -773,33 +1683,6 @@
 
   </main>
 
-  <!-- MODAL: GOOGLE APPS SCRIPT URL CONFIG -->
-  <div class="modal-overlay" id="configModal">
-    <div class="modal-box">
-      <h3 class="modal-title">⚙️ Konfigurasi Backend Google Apps Script</h3>
-      <p class="modal-desc">
-        Hubungkan Web App Vercel ini ke endpoint Google Apps Script <code>doPost(e)</code> Anda.
-      </p>
-      
-      <div class="form-group" style="margin-bottom: 1rem;">
-        <label class="form-label" for="gasUrlInput">URL Google Apps Script Web App</label>
-        <input type="url" id="gasUrlInput" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
-        <span class="label-sub" style="margin-top:4px; display:block;">
-          Didapatkan setelah klik <strong>Deploy &gt; New deployment &gt; Web app (Anyone)</strong> di Google Apps Script.
-        </span>
-      </div>
-
-      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:var(--radius-md); padding:12px; font-size:0.8rem; margin-bottom:1.5rem; color:#475569;">
-        <strong>💡 Tips Pengujian:</strong> Jika URL dikosongkan, formulir akan otomatis berjalan dalam <em>Simulasi Mode Demo</em> (menyimpan di memori browser dan menampilkan pratinjau data).
-      </div>
-
-      <div style="display:flex; justify-content:flex-end; gap:10px;">
-        <button type="button" class="btn btn-secondary" id="btnCloseConfig">Batal</button>
-        <button type="button" class="btn btn-primary" id="btnSaveConfig">Simpan Konfigurasi</button>
-      </div>
-    </div>
-  </div>
-
   <!-- MODAL: SUBMISSION SUCCESS -->
   <div class="modal-overlay" id="successModal">
     <div class="modal-box" style="text-align: center;">
@@ -842,6 +1725,11 @@
 (function () {
   'use strict';
 
+  // ============================================================
+  // KONFIGURASI BACKEND — URL GAS hardcode, tidak terekspos di UI
+  // ============================================================
+  const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxqvtofcNQEW-igPsZmMbr66UJ6l7x7a6o9U1Idv0gKbdd7elXGyFHA7aMdgs8azZRNtg/exec';
+
   // State
   let currentStep = 1;
   const totalSteps = 5;
@@ -857,12 +1745,6 @@
     const btnNext = document.getElementById('btnNextStep');
     const btnSubmit = document.getElementById('btnSubmitForm');
     const btnAutofill = document.getElementById('btnAutofill');
-    const btnOpenConfig = document.getElementById('btnOpenConfig');
-    const btnCloseConfig = document.getElementById('btnCloseConfig');
-    const btnSaveConfig = document.getElementById('btnSaveConfig');
-    const configModal = document.getElementById('configModal');
-    const gasUrlInput = document.getElementById('gasUrlInput');
-    const statusBadge = document.getElementById('statusBadge');
     const stepperProgressFill = document.getElementById('stepperProgressFill');
     const sameAddressCheck = document.getElementById('sameAddressCheck');
 
@@ -887,9 +1769,6 @@
     const referenceRepeater = document.getElementById('referenceRepeater');
 
     // Load saved GAS Web App URL from localStorage
-    const savedGasUrl = localStorage.getItem('novarix_gas_url') || '';
-    if (gasUrlInput) gasUrlInput.value = savedGasUrl;
-    updateStatusBadge(savedGasUrl);
 
     // Initialize Canvas
     initSignatureCanvas();
@@ -950,23 +1829,6 @@
 
     const btnAddReference = document.getElementById('btnAddReference');
     if (btnAddReference) btnAddReference.addEventListener('click', () => addReferenceRow());
-
-    // Config modal
-    if (btnOpenConfig && configModal) {
-      btnOpenConfig.addEventListener('click', () => configModal.classList.add('open'));
-    }
-    if (btnCloseConfig && configModal) {
-      btnCloseConfig.addEventListener('click', () => configModal.classList.remove('open'));
-    }
-    if (btnSaveConfig && configModal) {
-      btnSaveConfig.addEventListener('click', () => {
-        const url = gasUrlInput ? gasUrlInput.value.trim() : '';
-        localStorage.setItem('novarix_gas_url', url);
-        updateStatusBadge(url);
-        configModal.classList.remove('open');
-        showToast(url ? 'URL Google Apps Script berhasil disimpan!' : 'Menggunakan Mode Simulasi Demo.', 'success');
-      });
-    }
 
     // Review & Print Preview
     if (btnReviewPreview) {
@@ -1510,7 +2372,7 @@
     }
 
     /* ==========================================================================
-       FORM SUBMISSION & GAS API INTEGRATION
+       FORM SUBMISSION — POST langsung ke GAS backend
        ========================================================================== */
 
     async function handleFormSubmit(e) {
@@ -1572,17 +2434,10 @@
       btnSubmit.disabled = true;
       btnSubmit.innerHTML = `<span class="spinner"></span> Mengirim ke Google Sheets...`;
 
-      const gasUrl = (localStorage.getItem('novarix_gas_url') || '').trim();
+      // GAS URL sudah hardcode — tidak perlu localStorage
 
       try {
-        if (!gasUrl) {
-          await new Promise(resolve => setTimeout(resolve, 1200));
-          const demoId = 'NG-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.floor(1000 + Math.random() * 9000);
-          showSuccessModal(demoId, new Date().toLocaleString('id-ID'), true);
-          return;
-        }
-
-        const response = await fetch(gasUrl, {
+        const response = await fetch(GAS_ENDPOINT, {
           method: 'POST',
           headers: {
             'Content-Type': 'text/plain;charset=utf-8'
@@ -1593,7 +2448,7 @@
         const resData = await response.json();
 
         if (resData.status === 'success') {
-          showSuccessModal(resData.submissionId, resData.timestamp || new Date().toLocaleString('id-ID'), false);
+          showSuccessModal(resData.submissionId, resData.timestamp || new Date().toLocaleString('id-ID'));
         } else {
           throw new Error(resData.message || 'Terjadi kesalahan pada Google Apps Script.');
         }
@@ -1602,44 +2457,26 @@
         console.warn('GAS Fetch Warning:', err);
         showToast('Data dikirim! Jika sheet belum terisi, pastikan izin deployment GAS diatur ke "Anyone".', 'warning');
         const fallbackId = 'NG-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14);
-        showSuccessModal(fallbackId, new Date().toLocaleString('id-ID'), false);
+        showSuccessModal(fallbackId, new Date().toLocaleString('id-ID'));
       } finally {
         btnSubmit.disabled = false;
         btnSubmit.innerHTML = originalBtnText;
       }
     }
 
-    function showSuccessModal(id, time, isDemo) {
+    function showSuccessModal(id, time) {
       if (!successModal) return;
       if (successIdEl) successIdEl.textContent = id;
       if (successTimeEl) successTimeEl.textContent = time;
 
       const desc = document.getElementById('successDesc');
       if (desc) {
-        if (isDemo) {
-          desc.innerHTML = `
-            <strong>Simulasi Mode Demo Berhasil!</strong><br>
-            Untuk menyimpan langsung ke Google Sheets Anda, masukkan URL Web App Google Apps Script Anda melalui tombol <strong>⚙️ GAS API</strong> di pojok kanan atas.
-          `;
-        } else {
-          desc.innerHTML = `
-            Data formulir onboarding telah berhasil dikirim dan tersimpan rapi di spreadsheet Google Anda.
-          `;
-        }
+        desc.innerHTML = `Data formulir onboarding telah berhasil dikirim dan tersimpan rapi di spreadsheet Google Anda.`;
       }
       successModal.classList.add('open');
     }
 
-    function updateStatusBadge(url) {
-      if (!statusBadge) return;
-      if (url && url.startsWith('http')) {
-        statusBadge.className = 'badge-tag connected';
-        statusBadge.innerHTML = '<span class="status-dot"></span> GAS Connected';
-      } else {
-        statusBadge.className = 'badge-tag info';
-        statusBadge.innerHTML = 'Demo Simulation';
-      }
-    }
+
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
