@@ -1,0 +1,17 @@
+{
+  "name": "employee-onboarding-gas-vercel",
+  "version": "1.0.0",
+  "description": "Novarix Global Employee Particulars & Onboarding Form with Google Apps Script Backend and Vercel Hosting",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "keywords": [
+    "google-apps-script",
+    "vercel",
+    "onboarding-form",
+    "web-app"
+  ],
+  "author": "Novarix Global",
+  "license": "MIT"
+}
