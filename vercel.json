@@ -1,6 +1,7 @@
 {
   "version": 2,
   "name": "novarix-employee-onboarding",
+  "outputDirectory": "public",
   "cleanUrls": true,
   "headers": [
     {
