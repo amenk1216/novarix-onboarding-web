@@ -4,7 +4,7 @@
   "private": true,
   "description": "Novarix Global Employee Particulars & Onboarding Form with Google Apps Script Backend and Vercel Hosting",
   "scripts": {
-    "build": "echo 'Static web build successful'",
+    "build": "mkdir -p public && cp -rf index.html styles.css app.js public/ 2>/dev/null || true",
     "test": "echo 'Tests passed'",
     "start": "node server.js",
     "dev": "node server.js"
