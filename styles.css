@@ -625,7 +625,42 @@ body {
   color: var(--danger);
 }
 
-/* Digital Signature Canvas */
+/* Digital Signature Tabs & Modes */
+.signature-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sig-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sig-tab-btn:hover {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.sig-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25);
+}
+
+/* Digital Signature Canvas Box */
 .signature-box-wrapper {
   background: #ffffff;
   border: 2px dashed #94a3b8;
@@ -660,8 +695,153 @@ body {
 }
 
 .signature-note {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+}
+
+.dot-smooth {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Upload Signature Dropzone */
+.signature-upload-box {
+  background: #ffffff;
+  border: 2px dashed #94a3b8;
+  border-radius: var(--radius-md);
+  padding: 24px 18px;
+  text-align: center;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signature-upload-box:hover,
+.signature-upload-box.dragover {
+  border-color: var(--primary-light);
+  background: #f0f7ff;
+}
+
+.signature-upload-box.has-file {
+  border-color: var(--success);
+  border-style: solid;
+  background: #f0fdf4;
+}
+
+.upload-idle-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.upload-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.upload-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.upload-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  max-width: 440px;
+}
+
+.upload-preview-state {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.sig-preview-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: #ffffff;
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  max-width: 600px;
+  width: 100%;
+}
+
+.sig-preview-img-wrap {
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
+
+#uploadedSigPreviewImg {
+  max-height: 55px;
+  max-width: 160px;
+  object-fit: contain;
+  display: block;
+}
+
+.sig-preview-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  flex: 1;
+}
+
+.sig-file-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  word-break: break-all;
+}
+
+.sig-file-status {
+  font-size: 0.75rem;
+  color: var(--success);
+  font-weight: 500;
+}
+
+/* Valid Indicator */
+.sig-valid-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #b45309;
+  transition: all var(--transition-fast);
+}
+
+.sig-valid-indicator.valid {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
 }
 
 /* Buttons */
@@ -884,6 +1064,54 @@ body {
   }
 }
 
+/* Signature Mode Tabs & Upload */
+.signature-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.signature-tab-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--border-color);
+  background: #ffffff;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.signature-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+.signature-upload-wrapper {
+  border: 2px dashed #94a3b8;
+  border-radius: var(--radius-md);
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.signature-upload-wrapper:hover,
+.signature-upload-wrapper.dragover {
+  border-color: var(--primary-light);
+  background-color: #f0f7ff;
+}
+
+.signature-upload-wrapper.has-file {
+  border-color: var(--success);
+  border-style: solid;
+  background-color: #f0fdf4;
+}
+
 /* Screen View: Hide print template */
 @media screen {
   #printDocumentTemplate {
@@ -891,24 +1119,32 @@ body {
   }
 }
 
-/* Print View: Exact 5-page official document matching Novarix Global template */
+/* Print View: Exact 5-page official document matching Novarix Global template with Inter Font */
 @media print {
   @page {
     size: A4 portrait;
     margin: 12mm 15mm 12mm 15mm;
   }
 
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  *, *::before, *::after {
+    box-sizing: border-box;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Hide entire interactive form UI when printing */
+  body, #printDocumentTemplate, #printDocumentTemplate * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    color: #000000 !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide entire interactive UI */
   .app-header,
   .ambient-glow,
   .main-container,
@@ -927,12 +1163,14 @@ body {
   .print-page {
     page-break-after: always;
     break-after: page;
-    min-height: 265mm;
+    height: 268mm;
+    max-height: 268mm;
     position: relative;
     box-sizing: border-box;
-    padding-bottom: 25px;
-    font-size: 9pt;
-    line-height: 1.35;
+    padding-bottom: 22px;
+    font-size: 8pt;
+    line-height: 1.3;
+    overflow: hidden;
   }
 
   .print-page:last-child {
@@ -941,81 +1179,83 @@ body {
   }
 
   .print-header {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
 
   .company-title {
-    font-size: 15pt;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    margin-bottom: 3px;
-    color: #000;
+    font-size: 13.5pt;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    margin-bottom: 2px;
+    color: #000000 !important;
   }
 
   .form-title {
-    font-size: 11pt;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #000;
+    font-size: 10.5pt;
+    font-weight: 600;
+    margin-bottom: 3px;
+    color: #000000 !important;
   }
 
   .form-instructions {
-    font-size: 7.8pt;
+    font-size: 7.2pt;
     font-style: italic;
-    color: #333;
-    line-height: 1.35;
-    margin-bottom: 8px;
+    color: #222222 !important;
+    line-height: 1.25;
+    margin-bottom: 5px;
   }
 
   .print-divider {
     border: none;
-    border-top: 2px solid #000;
-    margin: 6px 0 10px 0;
+    border-top: 1.5px solid #000000;
+    margin: 3px 0 6px 0;
   }
 
   .print-section-title {
-    font-size: 9.5pt;
-    font-weight: bold;
-    margin-top: 10px;
-    margin-bottom: 4px;
+    font-size: 8.5pt;
+    font-weight: 700;
+    margin-top: 6px;
+    margin-bottom: 2px;
     text-transform: uppercase;
-    color: #000;
+    letter-spacing: 0.2px;
+    color: #000000 !important;
   }
 
   .print-section-subtitle {
-    font-size: 8pt;
+    font-size: 7pt;
     font-style: italic;
-    color: #444;
-    margin-bottom: 5px;
+    color: #333333 !important;
+    margin-bottom: 3px;
   }
 
   .print-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 10px;
-    font-size: 8.5pt;
+    margin-bottom: 6px;
+    font-size: 7.8pt;
+    line-height: 1.25;
   }
 
   .print-table th,
   .print-table td {
-    border: 1px solid #000;
-    padding: 4px 6px;
+    border: 1px solid #000000;
+    padding: 2.8px 5px;
     vertical-align: middle;
     text-align: left;
-    color: #000;
+    color: #000000 !important;
   }
 
   .print-table th {
     background-color: #f3f4f6 !important;
-    font-weight: bold;
-    font-size: 8pt;
+    font-weight: 700;
+    font-size: 7.5pt;
   }
 
   .print-note {
-    font-size: 8pt;
-    color: #333;
-    margin: 5px 0;
-    line-height: 1.35;
+    font-size: 7.2pt;
+    color: #222222 !important;
+    margin: 3px 0;
+    line-height: 1.25;
   }
 
   .print-footer {
@@ -1023,15 +1263,15 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    border-top: 1px solid #000;
-    padding-top: 5px;
-    font-size: 8pt;
+    border-top: 1px solid #000000;
+    padding-top: 3px;
+    font-size: 7pt;
     font-style: italic;
-    color: #444;
+    color: #333333 !important;
   }
 
   .multiline-text {
     white-space: pre-wrap;
-    line-height: 1.35;
+    line-height: 1.3;
   }
 }
