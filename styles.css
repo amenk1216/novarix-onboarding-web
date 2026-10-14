@@ -255,34 +255,45 @@ body {
 
 .stepper-list {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   list-style: none;
   position: relative;
+  margin: 0;
+  padding: 0;
 }
 
-.stepper-list::before {
-  content: "";
+/* Connecting track running directly through the vertical center of the step bubbles */
+.stepper-track {
   position: absolute;
   top: 20px;
-  left: 40px;
-  right: 40px;
-  height: 2px;
+  left: 10%;
+  width: 80%;
+  height: 3px;
   background: var(--border-color);
   z-index: 1;
+  transform: translateY(-50%);
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  overflow: hidden;
 }
 
+/* Active progress fill line that expands along the track */
 .stepper-progress-fill {
   position: absolute;
-  top: 20px;
-  left: 40px;
-  height: 2px;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
   background: var(--primary-light);
+  border-radius: var(--radius-full);
   z-index: 2;
-  transition: width var(--transition-normal);
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .step-item {
+  flex: 1 1 0;
+  min-width: 0;
   position: relative;
   z-index: 3;
   display: flex;
@@ -290,6 +301,7 @@ body {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  text-align: center;
 }
 
 .step-bubble {
@@ -305,6 +317,7 @@ body {
   font-weight: 700;
   font-size: 0.9rem;
   transition: all var(--transition-fast);
+  box-shadow: 0 0 0 4px var(--bg-card);
 }
 
 .step-label {
@@ -1262,16 +1275,3 @@ body {
     font-size: 7.2pt;
     color: #222222 !important;
     margin: 3px 0;
-    line-height: 1.25;
-  }
-
-  .print-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border-top: 1px solid #000000;
-    padding-top: 3px;
-    font-size: 7pt;
-    font-style: italic;
-    color: #333333 !important;
