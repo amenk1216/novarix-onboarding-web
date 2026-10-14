@@ -6,10 +6,10 @@
   <title>NOVARIX GLOBAL - Formulir Onboarding & Data Karyawan</title>
   <meta name="description" content="Formulir resmi onboarding dan data personal karyawan Novarix Global Jakarta (Ref: NG-HR-003).">
   
-  <!-- Google Fonts: Plus Jakarta Sans -->
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   
   <style>
 /* ==========================================================================
@@ -639,7 +639,42 @@ body {
   color: var(--danger);
 }
 
-/* Digital Signature Canvas */
+/* Digital Signature Tabs & Modes */
+.signature-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sig-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sig-tab-btn:hover {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.sig-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25);
+}
+
+/* Digital Signature Canvas Box */
 .signature-box-wrapper {
   background: #ffffff;
   border: 2px dashed #94a3b8;
@@ -674,8 +709,153 @@ body {
 }
 
 .signature-note {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+}
+
+.dot-smooth {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Upload Signature Dropzone */
+.signature-upload-box {
+  background: #ffffff;
+  border: 2px dashed #94a3b8;
+  border-radius: var(--radius-md);
+  padding: 24px 18px;
+  text-align: center;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signature-upload-box:hover,
+.signature-upload-box.dragover {
+  border-color: var(--primary-light);
+  background: #f0f7ff;
+}
+
+.signature-upload-box.has-file {
+  border-color: var(--success);
+  border-style: solid;
+  background: #f0fdf4;
+}
+
+.upload-idle-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.upload-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.upload-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.upload-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  max-width: 440px;
+}
+
+.upload-preview-state {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.sig-preview-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: #ffffff;
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  max-width: 600px;
+  width: 100%;
+}
+
+.sig-preview-img-wrap {
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
+
+#uploadedSigPreviewImg {
+  max-height: 55px;
+  max-width: 160px;
+  object-fit: contain;
+  display: block;
+}
+
+.sig-preview-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  flex: 1;
+}
+
+.sig-file-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  word-break: break-all;
+}
+
+.sig-file-status {
+  font-size: 0.75rem;
+  color: var(--success);
+  font-weight: 500;
+}
+
+/* Valid Indicator */
+.sig-valid-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #b45309;
+  transition: all var(--transition-fast);
+}
+
+.sig-valid-indicator.valid {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
 }
 
 /* Buttons */
@@ -898,6 +1078,54 @@ body {
   }
 }
 
+/* Signature Mode Tabs & Upload */
+.signature-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.signature-tab-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--border-color);
+  background: #ffffff;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.signature-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+.signature-upload-wrapper {
+  border: 2px dashed #94a3b8;
+  border-radius: var(--radius-md);
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.signature-upload-wrapper:hover,
+.signature-upload-wrapper.dragover {
+  border-color: var(--primary-light);
+  background-color: #f0f7ff;
+}
+
+.signature-upload-wrapper.has-file {
+  border-color: var(--success);
+  border-style: solid;
+  background-color: #f0fdf4;
+}
+
 /* Screen View: Hide print template */
 @media screen {
   #printDocumentTemplate {
@@ -905,21 +1133,29 @@ body {
   }
 }
 
-/* Print View: Exact 5-page official document matching Novarix Global template */
+/* Print View: Exact 5-page official document matching Novarix Global template with Inter Font */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm 14mm 10mm 14mm;
+    margin: 12mm 15mm 12mm 15mm;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body, #printDocumentTemplate, #printDocumentTemplate * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    color: #000000 !important;
   }
 
   body {
     background: #ffffff !important;
     color: #000000 !important;
-    font-family: Arial, Helvetica, sans-serif !important;
     margin: 0 !important;
     padding: 0 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
 
   /* Hide entire interactive UI */
@@ -941,12 +1177,14 @@ body {
   .print-page {
     page-break-after: always;
     break-after: page;
-    min-height: 270mm;
+    height: 268mm;
+    max-height: 268mm;
     position: relative;
     box-sizing: border-box;
-    padding-bottom: 25px;
-    font-size: 8.8pt;
-    line-height: 1.35;
+    padding-bottom: 22px;
+    font-size: 8pt;
+    line-height: 1.3;
+    overflow: hidden;
   }
 
   .print-page:last-child {
@@ -955,81 +1193,83 @@ body {
   }
 
   .print-header {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .company-title {
-    font-size: 14pt;
-    font-weight: bold;
-    letter-spacing: 0.5px;
+    font-size: 13.5pt;
+    font-weight: 700;
+    letter-spacing: 0.4px;
     margin-bottom: 2px;
-    color: #000;
+    color: #000000 !important;
   }
 
   .form-title {
     font-size: 10.5pt;
-    font-weight: bold;
-    margin-bottom: 4px;
-    color: #000;
+    font-weight: 600;
+    margin-bottom: 3px;
+    color: #000000 !important;
   }
 
   .form-instructions {
-    font-size: 7.5pt;
+    font-size: 7.2pt;
     font-style: italic;
-    color: #333;
-    line-height: 1.3;
-    margin-bottom: 6px;
+    color: #222222 !important;
+    line-height: 1.25;
+    margin-bottom: 5px;
   }
 
   .print-divider {
     border: none;
-    border-top: 2px solid #000;
-    margin: 4px 0 8px 0;
+    border-top: 1.5px solid #000000;
+    margin: 3px 0 6px 0;
   }
 
   .print-section-title {
-    font-size: 9pt;
-    font-weight: bold;
-    margin-top: 8px;
-    margin-bottom: 3px;
+    font-size: 8.5pt;
+    font-weight: 700;
+    margin-top: 6px;
+    margin-bottom: 2px;
     text-transform: uppercase;
-    color: #000;
+    letter-spacing: 0.2px;
+    color: #000000 !important;
   }
 
   .print-section-subtitle {
-    font-size: 7.5pt;
+    font-size: 7pt;
     font-style: italic;
-    color: #444;
-    margin-bottom: 4px;
+    color: #333333 !important;
+    margin-bottom: 3px;
   }
 
   .print-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 8px;
-    font-size: 8.2pt;
+    margin-bottom: 6px;
+    font-size: 7.8pt;
+    line-height: 1.25;
   }
 
   .print-table th,
   .print-table td {
-    border: 1px solid #000;
-    padding: 3.5px 5.5px;
+    border: 1px solid #000000;
+    padding: 2.8px 5px;
     vertical-align: middle;
     text-align: left;
-    color: #000;
+    color: #000000 !important;
   }
 
   .print-table th {
     background-color: #f3f4f6 !important;
-    font-weight: bold;
-    font-size: 8pt;
+    font-weight: 700;
+    font-size: 7.5pt;
   }
 
   .print-note {
-    font-size: 7.5pt;
-    color: #333;
-    margin: 4px 0;
-    line-height: 1.3;
+    font-size: 7.2pt;
+    color: #222222 !important;
+    margin: 3px 0;
+    line-height: 1.25;
   }
 
   .print-footer {
@@ -1037,11 +1277,11 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    border-top: 1px solid #000;
-    padding-top: 4px;
-    font-size: 7.5pt;
+    border-top: 1px solid #000000;
+    padding-top: 3px;
+    font-size: 7pt;
     font-style: italic;
-    color: #444;
+    color: #333333 !important;
   }
 
   .multiline-text {
@@ -1767,18 +2007,70 @@ body {
 
             <div class="col-12 form-group">
               <label class="form-label">
-                Digital Employee Signature (Tanda Tangan Digital) <span class="required-star">*</span>
-                <span class="label-sub">Tanda tangani di area kanvas di bawah menggunakan mouse / layar sentuh</span>
+                Digital Employee Signature (Tanda Tangan Karyawan) <span class="required-star">*</span>
+                <span class="label-sub">Pilih metode tanda tangan: buat langsung secara digital atau upload file gambar tanda tangan yang sudah ada</span>
               </label>
-              
-              <div class="signature-box-wrapper" id="signatureBox">
-                <canvas id="signatureCanvas" width="700" height="180"></canvas>
-                <div class="signature-controls">
-                  <span class="signature-note">Gunakan sentuhan jari atau kursor untuk menandatangani</span>
-                  <button type="button" class="btn btn-secondary btn-sm" id="btnClearSignature">
-                    🔄 Hapus &amp; Ulangi TTD
-                  </button>
+
+              <!-- Signature Mode Switcher Tabs -->
+              <div class="signature-tabs" role="tablist">
+                <button type="button" class="sig-tab-btn active" id="tabModeDraw" role="tab" aria-selected="true">
+                  ✍️ Buat Tanda Tangan Digital
+                </button>
+                <button type="button" class="sig-tab-btn" id="tabModeUpload" role="tab" aria-selected="false">
+                  📁 Upload Gambar Tanda Tangan
+                </button>
+              </div>
+
+              <!-- CONTAINER 1: DIGITAL DRAW CANVAS -->
+              <div id="drawSignatureContainer" class="sig-mode-container active">
+                <div class="signature-box-wrapper" id="signatureBox">
+                  <canvas id="signatureCanvas" width="700" height="180"></canvas>
+                  <div class="signature-controls">
+                    <span class="signature-note">
+                      <span class="dot-smooth"></span> Sentuhan halus aktif: gunakan mouse atau jari untuk menandatangani
+                    </span>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btnClearSignature">
+                      🔄 Hapus &amp; Ulangi TTD
+                    </button>
+                  </div>
                 </div>
+              </div>
+
+              <!-- CONTAINER 2: FILE UPLOAD DROPZONE -->
+              <div id="uploadSignatureContainer" class="sig-mode-container" style="display: none;">
+                <div class="signature-upload-box" id="sigUploadDropzone">
+                  <input type="file" id="sigFileInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;">
+                  
+                  <div class="upload-idle-state" id="sigUploadIdle">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-title">Klik atau seret file gambar Tanda Tangan ke sini</div>
+                    <div class="upload-hint">Format didukung: PNG (transparan disarankan), JPG, JPEG, WebP. Maks 5MB.</div>
+                    <button type="button" class="btn btn-outline-primary btn-sm" style="margin-top: 10px;" id="btnBrowseSigFile">
+                      📂 Pilih File Gambar
+                    </button>
+                  </div>
+
+                  <div class="upload-preview-state" id="sigUploadPreview" style="display: none;">
+                    <div class="sig-preview-card">
+                      <div class="sig-preview-img-wrap">
+                        <img id="uploadedSigPreviewImg" src="" alt="Uploaded Signature Preview">
+                      </div>
+                      <div class="sig-preview-meta">
+                        <span class="sig-file-name" id="sigFileName">signature.png</span>
+                        <span class="sig-file-status">✅ Tanda tangan berhasil dimuat ke dokumen</span>
+                      </div>
+                      <button type="button" class="btn btn-danger btn-sm" id="btnRemoveSigFile">
+                        🗑️ Hapus / Ganti Gambar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Helper Indicator -->
+              <div class="sig-valid-indicator" id="sigValidIndicator">
+                <span class="status-icon" id="sigStatusIcon">⚠️</span>
+                <span id="sigStatusText">Tanda tangan belum dibuat atau diunggah. Mohon tanda tangani sebelum submit.</span>
               </div>
             </div>
           </div>
@@ -2103,19 +2395,13 @@ body {
       <div class="print-note">
         If you answered 'Yes' to any of the above, please provide full details (dates, locations, circumstances):
       </div>
-      <table class="print-table" style="margin-top: 4px;">
+      <table class="print-table" style="margin-top: 4px; margin-bottom: 0;">
         <thead>
           <tr>
             <th style="width: 80%;">Question</th>
             <th style="width: 20%;">Response</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Have you ever been convicted of a criminal offense in a court of law in any country?</td>
-            <td id="p_legalConvicted"></td>
-          </tr>
-        </tbody>
       </table>
 
       <div class="print-footer">
@@ -2128,8 +2414,12 @@ body {
       <table class="print-table" style="margin-top: 0;">
         <tbody>
           <tr>
-            <td style="width: 80%;">Are there any pending criminal charges or police investigations currently against you?</td>
-            <td style="width: 20%;" id="p_legalPending"></td>
+            <td style="width: 80%;">Have you ever been convicted of a criminal offense in a court of law in any country?</td>
+            <td style="width: 20%;" id="p_legalConvicted"></td>
+          </tr>
+          <tr>
+            <td>Are there any pending criminal charges or police investigations currently against you?</td>
+            <td id="p_legalPending"></td>
           </tr>
           <tr>
             <td>Have you ever been dismissed, suspended, or forced to resign from any employment due to misconduct, fraud, harassment, or breach of trust?</td>
@@ -2205,8 +2495,10 @@ body {
   const totalSteps = 5;
   let hasDrawnSignature = false;
   let isDrawing = false;
-  let lastX = 0;
-  let lastY = 0;
+  let sigPoints = [];
+  let lastMidPoint = null;
+  let currentSigMode = 'draw';
+  let uploadedFileName = '';
 
   function initApp() {
     // DOM Elements
@@ -2223,6 +2515,21 @@ body {
     const signatureCtx = signatureCanvas ? signatureCanvas.getContext('2d') : null;
     const btnClearSignature = document.getElementById('btnClearSignature');
     const signatureBox = document.getElementById('signatureBox');
+    const tabModeDraw = document.getElementById('tabModeDraw');
+    const tabModeUpload = document.getElementById('tabModeUpload');
+    const drawSignatureContainer = document.getElementById('drawSignatureContainer');
+    const uploadSignatureContainer = document.getElementById('uploadSignatureContainer');
+    const sigUploadDropzone = document.getElementById('sigUploadDropzone');
+    const sigFileInput = document.getElementById('sigFileInput');
+    const btnBrowseSigFile = document.getElementById('btnBrowseSigFile');
+    const btnRemoveSigFile = document.getElementById('btnRemoveSigFile');
+    const uploadedSigPreviewImg = document.getElementById('uploadedSigPreviewImg');
+    const sigFileName = document.getElementById('sigFileName');
+    const sigUploadIdle = document.getElementById('sigUploadIdle');
+    const sigUploadPreview = document.getElementById('sigUploadPreview');
+    const sigValidIndicator = document.getElementById('sigValidIndicator');
+    const sigStatusIcon = document.getElementById('sigStatusIcon');
+    const sigStatusText = document.getElementById('sigStatusText');
 
     // Success Modal Elements
     const successModal = document.getElementById('successModal');
@@ -2402,7 +2709,7 @@ body {
           return false;
         }
         if (!hasDrawnSignature) {
-          showToast('Mohon berikan tanda tangan digital Anda pada kotak tanda tangan.', 'error');
+          showToast('Mohon berikan tanda tangan digital Anda (gambar langsung atau upload file gambar).', 'warning');
           if (signatureBox) signatureBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return false;
         }
@@ -2423,7 +2730,7 @@ body {
     }
 
     /* ==========================================================================
-       DIGITAL SIGNATURE CANVAS
+       DIGITAL SIGNATURE (SMOOTH CANVAS & FILE UPLOAD ENGINE)
        ========================================================================== */
 
     function initSignatureCanvas() {
@@ -2432,69 +2739,185 @@ body {
 
       // Mouse handlers
       signatureCanvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        const pos = getCanvasPos(e);
-        lastX = pos.x;
-        lastY = pos.y;
+        startDrawing(e);
       });
 
       window.addEventListener('mousemove', (e) => {
         if (!isDrawing) return;
-        const pos = getCanvasPos(e);
-        signatureCtx.beginPath();
-        signatureCtx.moveTo(lastX, lastY);
-        signatureCtx.lineTo(pos.x, pos.y);
-        signatureCtx.stroke();
-        lastX = pos.x;
-        lastY = pos.y;
-        hasDrawnSignature = true;
-        if (signatureBox) signatureBox.classList.add('has-signature');
+        drawSmooth(e);
       });
 
       window.addEventListener('mouseup', () => {
-        isDrawing = false;
+        if (isDrawing) stopDrawing();
       });
 
-      // Touch handlers
+      // Touch handlers (silky smooth on iPad, smartphones, touchscreen laptops)
       signatureCanvas.addEventListener('touchstart', (e) => {
         if (e.target === signatureCanvas) e.preventDefault();
-        isDrawing = true;
-        const touch = e.touches[0];
-        const pos = getCanvasPos(touch);
-        lastX = pos.x;
-        lastY = pos.y;
+        startDrawing(e);
       }, { passive: false });
 
       signatureCanvas.addEventListener('touchmove', (e) => {
         if (e.target === signatureCanvas) e.preventDefault();
         if (!isDrawing) return;
-        const touch = e.touches[0];
-        const pos = getCanvasPos(touch);
-        signatureCtx.beginPath();
-        signatureCtx.moveTo(lastX, lastY);
-        signatureCtx.lineTo(pos.x, pos.y);
-        signatureCtx.stroke();
-        lastX = pos.x;
-        lastY = pos.y;
-        hasDrawnSignature = true;
-        if (signatureBox) signatureBox.classList.add('has-signature');
+        drawSmooth(e);
       }, { passive: false });
 
       signatureCanvas.addEventListener('touchend', () => {
-        isDrawing = false;
+        if (isDrawing) stopDrawing();
       });
 
       if (btnClearSignature) {
-        btnClearSignature.addEventListener('click', clearSignature);
+        btnClearSignature.addEventListener('click', () => {
+          clearSignature();
+          showToast('Tanda tangan dihapus. Silakan buat atau upload kembali.', 'info');
+        });
       }
+
+      // Tab switcher handlers
+      if (tabModeDraw && tabModeUpload) {
+        tabModeDraw.addEventListener('click', () => switchSigMode('draw'));
+        tabModeUpload.addEventListener('click', () => switchSigMode('upload'));
+      }
+
+      // Setup file upload dropzone
+      setupSignatureUpload();
+    }
+
+    function switchSigMode(mode) {
+      currentSigMode = mode;
+      if (mode === 'draw') {
+        if (tabModeDraw) tabModeDraw.classList.add('active');
+        if (tabModeUpload) tabModeUpload.classList.remove('active');
+        if (drawSignatureContainer) drawSignatureContainer.style.display = 'block';
+        if (uploadSignatureContainer) uploadSignatureContainer.style.display = 'none';
+        setTimeout(resizeSignatureCanvas, 50);
+      } else {
+        if (tabModeUpload) tabModeUpload.classList.add('active');
+        if (tabModeDraw) tabModeDraw.classList.remove('active');
+        if (uploadSignatureContainer) uploadSignatureContainer.style.display = 'block';
+        if (drawSignatureContainer) drawSignatureContainer.style.display = 'none';
+      }
+    }
+
+    function setupSignatureUpload() {
+      if (!sigUploadDropzone || !sigFileInput) return;
+
+      if (btnBrowseSigFile) {
+        btnBrowseSigFile.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sigFileInput.click();
+        });
+      }
+
+      sigUploadDropzone.addEventListener('click', () => {
+        if (hasDrawnSignature && uploadedFileName) return;
+        sigFileInput.click();
+      });
+
+      sigFileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleSignatureFile(e.target.files[0]);
+        }
+      });
+
+      // Drag and drop events
+      ['dragenter', 'dragover'].forEach(evtName => {
+        sigUploadDropzone.addEventListener(evtName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          sigUploadDropzone.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(evtName => {
+        sigUploadDropzone.addEventListener(evtName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          sigUploadDropzone.classList.remove('dragover');
+        });
+      });
+
+      sigUploadDropzone.addEventListener('drop', (e) => {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleSignatureFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      if (btnRemoveSigFile) {
+        btnRemoveSigFile.addEventListener('click', (e) => {
+          e.stopPropagation();
+          clearSignature();
+          showToast('Gambar tanda tangan dihapus.', 'info');
+        });
+      }
+    }
+
+    function handleSignatureFile(file) {
+      if (!file) return;
+      const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+      if (!allowed.includes(file.type)) {
+        showToast('Format file tidak didukung! Mohon pilih gambar PNG, JPG, JPEG, atau WebP.', 'error');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Ukuran file gambar terlalu besar! Maksimal 5 MB.', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        const img = new Image();
+        img.onload = function() {
+          const dpr = window.devicePixelRatio || 1;
+          const canvasW = signatureCanvas.width / dpr;
+          const canvasH = signatureCanvas.height / dpr;
+
+          signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+
+          const padX = 24;
+          const padY = 16;
+          const maxW = canvasW - padX * 2;
+          const maxH = canvasH - padY * 2;
+          const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+          const drawW = img.width * scale;
+          const drawH = img.height * scale;
+          const drawX = (canvasW - drawW) / 2;
+          const drawY = (canvasH - drawH) / 2;
+
+          signatureCtx.drawImage(img, drawX, drawY, drawW, drawH);
+
+          uploadedFileName = file.name;
+          const sizeKb = (file.size / 1024).toFixed(1);
+
+          if (uploadedSigPreviewImg) uploadedSigPreviewImg.src = dataUrl;
+          if (sigFileName) sigFileName.textContent = `${file.name} (${sizeKb} KB)`;
+          if (sigUploadIdle) sigUploadIdle.style.display = 'none';
+          if (sigUploadPreview) sigUploadPreview.style.display = 'flex';
+          sigUploadDropzone.classList.add('has-file');
+
+          updateSignatureState(true, `File: ${file.name}`);
+          showToast('Gambar tanda tangan berhasil dimuat!', 'success');
+        };
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
     }
 
     function resizeSignatureCanvas() {
       if (!signatureCanvas || !signatureCtx) return;
       const dpr = window.devicePixelRatio || 1;
-      const rect = signatureCanvas.getBoundingClientRect();
       const parentWidth = signatureBox ? signatureBox.clientWidth - 32 : 650;
-      const displayWidth = rect.width > 50 ? rect.width : (parentWidth > 50 ? parentWidth : 650);
+      const displayWidth = parentWidth > 50 ? parentWidth : 650;
+
+      // Preserve existing content if already drawn
+      let tempImage = null;
+      if (hasDrawnSignature && signatureCanvas.width > 0 && signatureCanvas.height > 0) {
+        try {
+          tempImage = signatureCanvas.toDataURL('image/png');
+        } catch (e) {}
+      }
 
       signatureCanvas.width = displayWidth * dpr;
       signatureCanvas.height = 180 * dpr;
@@ -2502,25 +2925,121 @@ body {
       signatureCanvas.style.height = '180px';
 
       signatureCtx.scale(dpr, dpr);
-      signatureCtx.lineWidth = 2.5;
+      signatureCtx.lineWidth = 2.4;
       signatureCtx.lineCap = 'round';
       signatureCtx.lineJoin = 'round';
       signatureCtx.strokeStyle = '#0f172a';
+
+      if (tempImage) {
+        const img = new Image();
+        img.onload = () => {
+          signatureCtx.drawImage(img, 0, 0, displayWidth, 180);
+        };
+        img.src = tempImage;
+      }
     }
 
     function getCanvasPos(e) {
       const rect = signatureCanvas.getBoundingClientRect();
+      const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
       return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        x: clientX - rect.left,
+        y: clientY - rect.top
       };
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getCanvasPos(e);
+      sigPoints = [pos];
+      lastMidPoint = pos;
+
+      // Draw dot on initial click/tap
+      signatureCtx.beginPath();
+      signatureCtx.arc(pos.x, pos.y, signatureCtx.lineWidth / 2, 0, Math.PI * 2);
+      signatureCtx.fillStyle = '#0f172a';
+      signatureCtx.fill();
+
+      hasDrawnSignature = true;
+      updateSignatureState(true, 'Digambar langsung');
+    }
+
+    function drawSmooth(e) {
+      if (!isDrawing) return;
+      const pos = getCanvasPos(e);
+      sigPoints.push(pos);
+
+      if (sigPoints.length < 2) return;
+
+      const p1 = sigPoints[sigPoints.length - 2];
+      const p2 = sigPoints[sigPoints.length - 1];
+
+      // Midpoint quadratic interpolation for ultra-smooth ink curve
+      const midPoint = {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2
+      };
+
+      signatureCtx.beginPath();
+      signatureCtx.moveTo(lastMidPoint.x, lastMidPoint.y);
+      signatureCtx.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+      signatureCtx.stroke();
+
+      lastMidPoint = midPoint;
+      hasDrawnSignature = true;
+      updateSignatureState(true, 'Digambar langsung');
+    }
+
+    function stopDrawing() {
+      if (!isDrawing) return;
+      if (sigPoints.length > 1 && lastMidPoint) {
+        const lastP = sigPoints[sigPoints.length - 1];
+        signatureCtx.beginPath();
+        signatureCtx.moveTo(lastMidPoint.x, lastMidPoint.y);
+        signatureCtx.lineTo(lastP.x, lastP.y);
+        signatureCtx.stroke();
+      }
+      isDrawing = false;
+      sigPoints = [];
+      lastMidPoint = null;
     }
 
     function clearSignature() {
       if (!signatureCtx) return;
       signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
       hasDrawnSignature = false;
-      if (signatureBox) signatureBox.classList.remove('has-signature');
+      sigPoints = [];
+      lastMidPoint = null;
+      uploadedFileName = '';
+
+      if (sigFileInput) sigFileInput.value = '';
+      if (sigUploadIdle) sigUploadIdle.style.display = 'flex';
+      if (sigUploadPreview) sigUploadPreview.style.display = 'none';
+      if (sigUploadDropzone) sigUploadDropzone.classList.remove('has-file');
+      if (uploadedSigPreviewImg) uploadedSigPreviewImg.src = '';
+
+      updateSignatureState(false);
+    }
+
+    function updateSignatureState(isValid, detail = '') {
+      hasDrawnSignature = isValid;
+      if (signatureBox) {
+        if (isValid) signatureBox.classList.add('has-signature');
+        else signatureBox.classList.remove('has-signature');
+      }
+
+      if (sigValidIndicator && sigStatusIcon && sigStatusText) {
+        if (isValid) {
+          sigValidIndicator.className = 'sig-valid-indicator valid';
+          sigStatusIcon.textContent = '✅';
+          sigStatusText.textContent = `Tanda tangan siap (${detail || 'Tervalidasi'}).`;
+        } else {
+          sigValidIndicator.className = 'sig-valid-indicator';
+          sigStatusIcon.textContent = '⚠️';
+          sigStatusText.textContent = 'Tanda tangan belum dibuat atau diunggah. Mohon tanda tangani sebelum submit.';
+        }
+      }
     }
 
     /* ==========================================================================
@@ -2840,14 +3359,20 @@ body {
       if (!signatureCanvas || !signatureCtx) return;
       resizeSignatureCanvas();
       clearSignature();
+
+      signatureCtx.lineWidth = 2.4;
+      signatureCtx.lineCap = 'round';
+      signatureCtx.lineJoin = 'round';
+      signatureCtx.strokeStyle = '#0f172a';
+
       signatureCtx.beginPath();
       signatureCtx.moveTo(80, 100);
       signatureCtx.bezierCurveTo(120, 40, 150, 140, 200, 70);
       signatureCtx.bezierCurveTo(240, 50, 220, 120, 280, 95);
       signatureCtx.lineTo(340, 95);
       signatureCtx.stroke();
-      hasDrawnSignature = true;
-      if (signatureBox) signatureBox.classList.add('has-signature');
+
+      updateSignatureState(true, 'Contoh tanda tangan autofill');
     }
 
     /* ==========================================================================
