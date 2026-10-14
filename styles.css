@@ -1153,7 +1153,7 @@ body {
   }
 
   body, #printDocumentTemplate, #printDocumentTemplate * {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    font-family: Arial, Helvetica, 'Liberation Sans', 'Inter', sans-serif !important;
     color: #000000 !important;
   }
 
@@ -1199,52 +1199,45 @@ body {
   }
 
   .print-header {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 
   .company-title {
-    font-size: 13.5pt;
+    font-size: 14pt;
     font-weight: 700;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.2px;
     margin-bottom: 2px;
     color: #000000 !important;
   }
 
   .form-title {
-    font-size: 10.5pt;
-    font-weight: 600;
+    font-size: 11pt;
+    font-weight: 700;
     margin-bottom: 3px;
     color: #000000 !important;
   }
 
   .form-instructions {
-    font-size: 7.2pt;
+    font-size: 7.5pt;
     font-style: italic;
-    color: #222222 !important;
+    color: #000000 !important;
     line-height: 1.25;
-    margin-bottom: 5px;
-  }
-
-  .print-divider {
-    border: none;
-    border-top: 1.5px solid #000000;
-    margin: 3px 0 6px 0;
+    margin-bottom: 4px;
   }
 
   .print-section-title {
     font-size: 8.5pt;
     font-weight: 700;
-    margin-top: 6px;
+    margin-top: 8px;
     margin-bottom: 2px;
     text-transform: uppercase;
-    letter-spacing: 0.2px;
     color: #000000 !important;
   }
 
   .print-section-subtitle {
-    font-size: 7pt;
+    font-size: 7.2pt;
     font-style: italic;
-    color: #333333 !important;
+    color: #000000 !important;
     margin-bottom: 3px;
   }
 
@@ -1266,12 +1259,32 @@ body {
   }
 
   .print-table th {
-    background-color: #f3f4f6 !important;
+    background-color: #ffffff !important;
     font-weight: 700;
     font-size: 7.5pt;
   }
 
   .print-note {
     font-size: 7.2pt;
-    color: #222222 !important;
+    color: #000000 !important;
     margin: 3px 0;
+    line-height: 1.25;
+  }
+
+  .print-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #000000;
+    padding-top: 3px;
+    font-size: 7.2pt;
+    font-style: italic;
+    color: #000000 !important;
+  }
+
+  #p_signatureImg {
+    display: block;
+    max-height: 52px;
+    max-width: 210px;
+    object-fit: contain;
