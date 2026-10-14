@@ -8,13 +8,20 @@
 (function () {
   'use strict';
 
+  // ============================================================
+  // KONFIGURASI BACKEND — URL GAS hardcode, tidak terekspos di UI
+  // ============================================================
+  const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxqvtofcNQEW-igPsZmMbr66UJ6l7x7a6o9U1Idv0gKbdd7elXGyFHA7aMdgs8azZRNtg/exec';
+
   // State
   let currentStep = 1;
   const totalSteps = 5;
   let hasDrawnSignature = false;
   let isDrawing = false;
-  let lastX = 0;
-  let lastY = 0;
+  let sigPoints = [];
+  let lastMidPoint = null;
+  let currentSigMode = 'draw';
+  let uploadedFileName = '';
 
   function initApp() {
     // DOM Elements
@@ -23,12 +30,6 @@
     const btnNext = document.getElementById('btnNextStep');
     const btnSubmit = document.getElementById('btnSubmitForm');
     const btnAutofill = document.getElementById('btnAutofill');
-    const btnOpenConfig = document.getElementById('btnOpenConfig');
-    const btnCloseConfig = document.getElementById('btnCloseConfig');
-    const btnSaveConfig = document.getElementById('btnSaveConfig');
-    const configModal = document.getElementById('configModal');
-    const gasUrlInput = document.getElementById('gasUrlInput');
-    const statusBadge = document.getElementById('statusBadge');
     const stepperProgressFill = document.getElementById('stepperProgressFill');
     const sameAddressCheck = document.getElementById('sameAddressCheck');
 
@@ -37,6 +38,21 @@
     const signatureCtx = signatureCanvas ? signatureCanvas.getContext('2d') : null;
     const btnClearSignature = document.getElementById('btnClearSignature');
     const signatureBox = document.getElementById('signatureBox');
+    const tabModeDraw = document.getElementById('tabModeDraw');
+    const tabModeUpload = document.getElementById('tabModeUpload');
+    const drawSignatureContainer = document.getElementById('drawSignatureContainer');
+    const uploadSignatureContainer = document.getElementById('uploadSignatureContainer');
+    const sigUploadDropzone = document.getElementById('sigUploadDropzone');
+    const sigFileInput = document.getElementById('sigFileInput');
+    const btnBrowseSigFile = document.getElementById('btnBrowseSigFile');
+    const btnRemoveSigFile = document.getElementById('btnRemoveSigFile');
+    const uploadedSigPreviewImg = document.getElementById('uploadedSigPreviewImg');
+    const sigFileName = document.getElementById('sigFileName');
+    const sigUploadIdle = document.getElementById('sigUploadIdle');
+    const sigUploadPreview = document.getElementById('sigUploadPreview');
+    const sigValidIndicator = document.getElementById('sigValidIndicator');
+    const sigStatusIcon = document.getElementById('sigStatusIcon');
+    const sigStatusText = document.getElementById('sigStatusText');
 
     // Success Modal Elements
     const successModal = document.getElementById('successModal');
@@ -53,9 +69,6 @@
     const referenceRepeater = document.getElementById('referenceRepeater');
 
     // Load saved GAS Web App URL from localStorage
-    const savedGasUrl = localStorage.getItem('novarix_gas_url') || '';
-    if (gasUrlInput) gasUrlInput.value = savedGasUrl;
-    updateStatusBadge(savedGasUrl);
 
     // Initialize Canvas
     initSignatureCanvas();
@@ -117,26 +130,12 @@
     const btnAddReference = document.getElementById('btnAddReference');
     if (btnAddReference) btnAddReference.addEventListener('click', () => addReferenceRow());
 
-    // Config modal
-    if (btnOpenConfig && configModal) {
-      btnOpenConfig.addEventListener('click', () => configModal.classList.add('open'));
-    }
-    if (btnCloseConfig && configModal) {
-      btnCloseConfig.addEventListener('click', () => configModal.classList.remove('open'));
-    }
-    if (btnSaveConfig && configModal) {
-      btnSaveConfig.addEventListener('click', () => {
-        const url = gasUrlInput ? gasUrlInput.value.trim() : '';
-        localStorage.setItem('novarix_gas_url', url);
-        updateStatusBadge(url);
-        configModal.classList.remove('open');
-        showToast(url ? 'URL Google Apps Script berhasil disimpan!' : 'Menggunakan Mode Simulasi Demo.', 'success');
-      });
-    }
-
-    // Review & Print Preview
+    // Review & Print Preview using official 5-page template
     if (btnReviewPreview) {
-      btnReviewPreview.addEventListener('click', () => window.print());
+      btnReviewPreview.addEventListener('click', () => {
+        populatePrintTemplate();
+        window.print();
+      });
     }
 
     // Success Modal actions
@@ -151,8 +150,14 @@
     }
 
     if (btnPrintSubmission) {
-      btnPrintSubmission.addEventListener('click', () => window.print());
+      btnPrintSubmission.addEventListener('click', () => {
+        populatePrintTemplate();
+        window.print();
+      });
     }
+
+    // Also trigger populatePrintTemplate before browser's native print (Ctrl+P / Cmd+P)
+    window.addEventListener('beforeprint', populatePrintTemplate);
 
     // Form Submission
     if (form) {
@@ -227,7 +232,7 @@
           return false;
         }
         if (!hasDrawnSignature) {
-          showToast('Mohon berikan tanda tangan digital Anda pada kotak tanda tangan.', 'error');
+          showToast('Mohon berikan tanda tangan digital Anda (gambar langsung atau upload file gambar).', 'warning');
           if (signatureBox) signatureBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return false;
         }
@@ -248,7 +253,7 @@
     }
 
     /* ==========================================================================
-       DIGITAL SIGNATURE CANVAS
+       DIGITAL SIGNATURE (SMOOTH CANVAS & FILE UPLOAD ENGINE)
        ========================================================================== */
 
     function initSignatureCanvas() {
@@ -257,69 +262,185 @@
 
       // Mouse handlers
       signatureCanvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        const pos = getCanvasPos(e);
-        lastX = pos.x;
-        lastY = pos.y;
+        startDrawing(e);
       });
 
       window.addEventListener('mousemove', (e) => {
         if (!isDrawing) return;
-        const pos = getCanvasPos(e);
-        signatureCtx.beginPath();
-        signatureCtx.moveTo(lastX, lastY);
-        signatureCtx.lineTo(pos.x, pos.y);
-        signatureCtx.stroke();
-        lastX = pos.x;
-        lastY = pos.y;
-        hasDrawnSignature = true;
-        if (signatureBox) signatureBox.classList.add('has-signature');
+        drawSmooth(e);
       });
 
       window.addEventListener('mouseup', () => {
-        isDrawing = false;
+        if (isDrawing) stopDrawing();
       });
 
-      // Touch handlers
+      // Touch handlers (silky smooth on iPad, smartphones, touchscreen laptops)
       signatureCanvas.addEventListener('touchstart', (e) => {
         if (e.target === signatureCanvas) e.preventDefault();
-        isDrawing = true;
-        const touch = e.touches[0];
-        const pos = getCanvasPos(touch);
-        lastX = pos.x;
-        lastY = pos.y;
+        startDrawing(e);
       }, { passive: false });
 
       signatureCanvas.addEventListener('touchmove', (e) => {
         if (e.target === signatureCanvas) e.preventDefault();
         if (!isDrawing) return;
-        const touch = e.touches[0];
-        const pos = getCanvasPos(touch);
-        signatureCtx.beginPath();
-        signatureCtx.moveTo(lastX, lastY);
-        signatureCtx.lineTo(pos.x, pos.y);
-        signatureCtx.stroke();
-        lastX = pos.x;
-        lastY = pos.y;
-        hasDrawnSignature = true;
-        if (signatureBox) signatureBox.classList.add('has-signature');
+        drawSmooth(e);
       }, { passive: false });
 
       signatureCanvas.addEventListener('touchend', () => {
-        isDrawing = false;
+        if (isDrawing) stopDrawing();
       });
 
       if (btnClearSignature) {
-        btnClearSignature.addEventListener('click', clearSignature);
+        btnClearSignature.addEventListener('click', () => {
+          clearSignature();
+          showToast('Tanda tangan dihapus. Silakan buat atau upload kembali.', 'info');
+        });
       }
+
+      // Tab switcher handlers
+      if (tabModeDraw && tabModeUpload) {
+        tabModeDraw.addEventListener('click', () => switchSigMode('draw'));
+        tabModeUpload.addEventListener('click', () => switchSigMode('upload'));
+      }
+
+      // Setup file upload dropzone
+      setupSignatureUpload();
+    }
+
+    function switchSigMode(mode) {
+      currentSigMode = mode;
+      if (mode === 'draw') {
+        if (tabModeDraw) tabModeDraw.classList.add('active');
+        if (tabModeUpload) tabModeUpload.classList.remove('active');
+        if (drawSignatureContainer) drawSignatureContainer.style.display = 'block';
+        if (uploadSignatureContainer) uploadSignatureContainer.style.display = 'none';
+        setTimeout(resizeSignatureCanvas, 50);
+      } else {
+        if (tabModeUpload) tabModeUpload.classList.add('active');
+        if (tabModeDraw) tabModeDraw.classList.remove('active');
+        if (uploadSignatureContainer) uploadSignatureContainer.style.display = 'block';
+        if (drawSignatureContainer) drawSignatureContainer.style.display = 'none';
+      }
+    }
+
+    function setupSignatureUpload() {
+      if (!sigUploadDropzone || !sigFileInput) return;
+
+      if (btnBrowseSigFile) {
+        btnBrowseSigFile.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sigFileInput.click();
+        });
+      }
+
+      sigUploadDropzone.addEventListener('click', () => {
+        if (hasDrawnSignature && uploadedFileName) return;
+        sigFileInput.click();
+      });
+
+      sigFileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleSignatureFile(e.target.files[0]);
+        }
+      });
+
+      // Drag and drop events
+      ['dragenter', 'dragover'].forEach(evtName => {
+        sigUploadDropzone.addEventListener(evtName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          sigUploadDropzone.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(evtName => {
+        sigUploadDropzone.addEventListener(evtName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          sigUploadDropzone.classList.remove('dragover');
+        });
+      });
+
+      sigUploadDropzone.addEventListener('drop', (e) => {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleSignatureFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      if (btnRemoveSigFile) {
+        btnRemoveSigFile.addEventListener('click', (e) => {
+          e.stopPropagation();
+          clearSignature();
+          showToast('Gambar tanda tangan dihapus.', 'info');
+        });
+      }
+    }
+
+    function handleSignatureFile(file) {
+      if (!file) return;
+      const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+      if (!allowed.includes(file.type)) {
+        showToast('Format file tidak didukung! Mohon pilih gambar PNG, JPG, JPEG, atau WebP.', 'error');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Ukuran file gambar terlalu besar! Maksimal 5 MB.', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        const img = new Image();
+        img.onload = function() {
+          const dpr = window.devicePixelRatio || 1;
+          const canvasW = signatureCanvas.width / dpr;
+          const canvasH = signatureCanvas.height / dpr;
+
+          signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+
+          const padX = 24;
+          const padY = 16;
+          const maxW = canvasW - padX * 2;
+          const maxH = canvasH - padY * 2;
+          const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+          const drawW = img.width * scale;
+          const drawH = img.height * scale;
+          const drawX = (canvasW - drawW) / 2;
+          const drawY = (canvasH - drawH) / 2;
+
+          signatureCtx.drawImage(img, drawX, drawY, drawW, drawH);
+
+          uploadedFileName = file.name;
+          const sizeKb = (file.size / 1024).toFixed(1);
+
+          if (uploadedSigPreviewImg) uploadedSigPreviewImg.src = dataUrl;
+          if (sigFileName) sigFileName.textContent = `${file.name} (${sizeKb} KB)`;
+          if (sigUploadIdle) sigUploadIdle.style.display = 'none';
+          if (sigUploadPreview) sigUploadPreview.style.display = 'flex';
+          sigUploadDropzone.classList.add('has-file');
+
+          updateSignatureState(true, `File: ${file.name}`);
+          showToast('Gambar tanda tangan berhasil dimuat!', 'success');
+        };
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
     }
 
     function resizeSignatureCanvas() {
       if (!signatureCanvas || !signatureCtx) return;
       const dpr = window.devicePixelRatio || 1;
-      const rect = signatureCanvas.getBoundingClientRect();
       const parentWidth = signatureBox ? signatureBox.clientWidth - 32 : 650;
-      const displayWidth = rect.width > 50 ? rect.width : (parentWidth > 50 ? parentWidth : 650);
+      const displayWidth = parentWidth > 50 ? parentWidth : 650;
+
+      // Preserve existing content if already drawn
+      let tempImage = null;
+      if (hasDrawnSignature && signatureCanvas.width > 0 && signatureCanvas.height > 0) {
+        try {
+          tempImage = signatureCanvas.toDataURL('image/png');
+        } catch (e) {}
+      }
 
       signatureCanvas.width = displayWidth * dpr;
       signatureCanvas.height = 180 * dpr;
@@ -327,25 +448,121 @@
       signatureCanvas.style.height = '180px';
 
       signatureCtx.scale(dpr, dpr);
-      signatureCtx.lineWidth = 2.5;
+      signatureCtx.lineWidth = 2.4;
       signatureCtx.lineCap = 'round';
       signatureCtx.lineJoin = 'round';
       signatureCtx.strokeStyle = '#0f172a';
+
+      if (tempImage) {
+        const img = new Image();
+        img.onload = () => {
+          signatureCtx.drawImage(img, 0, 0, displayWidth, 180);
+        };
+        img.src = tempImage;
+      }
     }
 
     function getCanvasPos(e) {
       const rect = signatureCanvas.getBoundingClientRect();
+      const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
       return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        x: clientX - rect.left,
+        y: clientY - rect.top
       };
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getCanvasPos(e);
+      sigPoints = [pos];
+      lastMidPoint = pos;
+
+      // Draw dot on initial click/tap
+      signatureCtx.beginPath();
+      signatureCtx.arc(pos.x, pos.y, signatureCtx.lineWidth / 2, 0, Math.PI * 2);
+      signatureCtx.fillStyle = '#0f172a';
+      signatureCtx.fill();
+
+      hasDrawnSignature = true;
+      updateSignatureState(true, 'Digambar langsung');
+    }
+
+    function drawSmooth(e) {
+      if (!isDrawing) return;
+      const pos = getCanvasPos(e);
+      sigPoints.push(pos);
+
+      if (sigPoints.length < 2) return;
+
+      const p1 = sigPoints[sigPoints.length - 2];
+      const p2 = sigPoints[sigPoints.length - 1];
+
+      // Midpoint quadratic interpolation for ultra-smooth ink curve
+      const midPoint = {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2
+      };
+
+      signatureCtx.beginPath();
+      signatureCtx.moveTo(lastMidPoint.x, lastMidPoint.y);
+      signatureCtx.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+      signatureCtx.stroke();
+
+      lastMidPoint = midPoint;
+      hasDrawnSignature = true;
+      updateSignatureState(true, 'Digambar langsung');
+    }
+
+    function stopDrawing() {
+      if (!isDrawing) return;
+      if (sigPoints.length > 1 && lastMidPoint) {
+        const lastP = sigPoints[sigPoints.length - 1];
+        signatureCtx.beginPath();
+        signatureCtx.moveTo(lastMidPoint.x, lastMidPoint.y);
+        signatureCtx.lineTo(lastP.x, lastP.y);
+        signatureCtx.stroke();
+      }
+      isDrawing = false;
+      sigPoints = [];
+      lastMidPoint = null;
     }
 
     function clearSignature() {
       if (!signatureCtx) return;
       signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
       hasDrawnSignature = false;
-      if (signatureBox) signatureBox.classList.remove('has-signature');
+      sigPoints = [];
+      lastMidPoint = null;
+      uploadedFileName = '';
+
+      if (sigFileInput) sigFileInput.value = '';
+      if (sigUploadIdle) sigUploadIdle.style.display = 'flex';
+      if (sigUploadPreview) sigUploadPreview.style.display = 'none';
+      if (sigUploadDropzone) sigUploadDropzone.classList.remove('has-file');
+      if (uploadedSigPreviewImg) uploadedSigPreviewImg.src = '';
+
+      updateSignatureState(false);
+    }
+
+    function updateSignatureState(isValid, detail = '') {
+      hasDrawnSignature = isValid;
+      if (signatureBox) {
+        if (isValid) signatureBox.classList.add('has-signature');
+        else signatureBox.classList.remove('has-signature');
+      }
+
+      if (sigValidIndicator && sigStatusIcon && sigStatusText) {
+        if (isValid) {
+          sigValidIndicator.className = 'sig-valid-indicator valid';
+          sigStatusIcon.textContent = '✅';
+          sigStatusText.textContent = `Tanda tangan siap (${detail || 'Tervalidasi'}).`;
+        } else {
+          sigValidIndicator.className = 'sig-valid-indicator';
+          sigStatusIcon.textContent = '⚠️';
+          sigStatusText.textContent = 'Tanda tangan belum dibuat atau diunggah. Mohon tanda tangani sebelum submit.';
+        }
+      }
     }
 
     /* ==========================================================================
@@ -372,39 +589,39 @@
       card.className = 'repeater-card';
       card.innerHTML = `
         <div class="repeater-card-header">
-          <span class="repeater-badge">Tanggungan / Anggota #${index}</span>
+          <span class="repeater-badge">Tanggungan / Family Member #${index}</span>
           <button type="button" class="btn-remove-row" onclick="this.closest('.repeater-card').remove()">
-            ✕ Hapus
+            ✕ Hapus / Delete
           </button>
         </div>
         <div class="form-grid">
           <div class="col-4 form-group">
-            <label class="form-label">Hubungan (Relationship)</label>
+            <label class="form-label">Hubungan / Relationship</label>
             <select class="form-select fam-rel">
-              <option value="Spouse" ${data.relationship === 'Spouse' ? 'selected' : ''}>Spouse (Istri/Suami)</option>
-              <option value="Child 1" ${data.relationship === 'Child 1' ? 'selected' : ''}>Child 1 (Anak 1)</option>
-              <option value="Child 2" ${data.relationship === 'Child 2' ? 'selected' : ''}>Child 2 (Anak 2)</option>
-              <option value="Child 3" ${data.relationship === 'Child 3' ? 'selected' : ''}>Child 3 (Anak 3)</option>
-              <option value="Child 4" ${data.relationship === 'Child 4' ? 'selected' : ''}>Child 4 (Anak 4)</option>
-              <option value="Child 5" ${data.relationship === 'Child 5' ? 'selected' : ''}>Child 5 (Anak 5)</option>
-              <option value="Other" ${data.relationship === 'Other' ? 'selected' : ''}>Lainnya</option>
+              <option value="Spouse" ${data.relationship === 'Spouse' ? 'selected' : ''}>Pasangan (Istri/Suami) / Spouse</option>
+              <option value="Child 1" ${data.relationship === 'Child 1' ? 'selected' : ''}>Anak 1 / Child 1</option>
+              <option value="Child 2" ${data.relationship === 'Child 2' ? 'selected' : ''}>Anak 2 / Child 2</option>
+              <option value="Child 3" ${data.relationship === 'Child 3' ? 'selected' : ''}>Anak 3 / Child 3</option>
+              <option value="Child 4" ${data.relationship === 'Child 4' ? 'selected' : ''}>Anak 4 / Child 4</option>
+              <option value="Child 5" ${data.relationship === 'Child 5' ? 'selected' : ''}>Anak 5 / Child 5</option>
+              <option value="Other" ${data.relationship === 'Other' ? 'selected' : ''}>Lainnya / Other</option>
             </select>
           </div>
           <div class="col-4 form-group">
-            <label class="form-label">Nama Lengkap</label>
-            <input type="text" class="form-input fam-name" placeholder="Nama anggota keluarga" value="${data.name || ''}">
+            <label class="form-label">Nama Lengkap / Full Name</label>
+            <input type="text" class="form-input fam-name" placeholder="Nama lengkap / Full name" value="${data.name || ''}">
           </div>
           <div class="col-4 form-group">
-            <label class="form-label">KTP / NIK</label>
-            <input type="text" class="form-input fam-nik" maxlength="16" placeholder="NIK 16 digit" value="${data.nik || ''}">
+            <label class="form-label">Nomor KTP / NIK (National ID)</label>
+            <input type="text" class="form-input fam-nik" maxlength="16" placeholder="NIK 16 digit / 16-digit ID" value="${data.nik || ''}">
           </div>
           <div class="col-6 form-group">
-            <label class="form-label">Tanggal Lahir</label>
+            <label class="form-label">Tanggal Lahir / Date of Birth</label>
             <input type="date" class="form-input fam-dob" value="${data.dob || ''}">
           </div>
           <div class="col-6 form-group">
-            <label class="form-label">Jenis Kelamin / Pekerjaan</label>
-            <input type="text" class="form-input fam-occ" placeholder="Misal: Female / Ibu Rumah Tangga" value="${data.genderOrOccupation || ''}">
+            <label class="form-label">Jenis Kelamin / Pekerjaan (Gender / Occupation)</label>
+            <input type="text" class="form-input fam-occ" placeholder="Misal: Wanita / Karyawan Swasta (Female / Private Employee)" value="${data.genderOrOccupation || ''}">
           </div>
         </div>
       `;
@@ -418,37 +635,37 @@
       card.className = 'repeater-card';
       card.innerHTML = `
         <div class="repeater-card-header">
-          <span class="repeater-badge">Riwayat Pendidikan #${index}</span>
+          <span class="repeater-badge">Riwayat Pendidikan / Education #${index}</span>
           <button type="button" class="btn-remove-row" onclick="this.closest('.repeater-card').remove()">
-            ✕ Hapus
+            ✕ Hapus / Delete
           </button>
         </div>
         <div class="form-grid">
           <div class="col-3 form-group">
-            <label class="form-label">Jenjang (Level)</label>
+            <label class="form-label">Jenjang / Level</label>
             <select class="form-select edu-level">
-              <option value="University S1" ${data.level === 'University S1' ? 'selected' : ''}>University S1</option>
-              <option value="University S2" ${data.level === 'University S2' ? 'selected' : ''}>University S2</option>
-              <option value="University D3" ${data.level === 'University D3' ? 'selected' : ''}>University D3</option>
-              <option value="High School" ${data.level === 'High School' ? 'selected' : ''}>High School (SMA/SMK)</option>
-              <option value="Certificate" ${data.level === 'Certificate' ? 'selected' : ''}>Sertifikasi Profesional</option>
+              <option value="University S1" ${data.level === 'University S1' ? 'selected' : ''}>S1 / Bachelor's Degree</option>
+              <option value="University S2" ${data.level === 'University S2' ? 'selected' : ''}>S2 / Master's Degree</option>
+              <option value="University D3" ${data.level === 'University D3' ? 'selected' : ''}>D3 / Diploma</option>
+              <option value="High School" ${data.level === 'High School' ? 'selected' : ''}>SMA/SMK / Senior High School</option>
+              <option value="Certificate" ${data.level === 'Certificate' ? 'selected' : ''}>Sertifikasi Profesional / Certificate</option>
             </select>
           </div>
           <div class="col-4 form-group">
-            <label class="form-label">Nama Institusi / Universitas</label>
-            <input type="text" class="form-input edu-inst" placeholder="Contoh: Universitas Mercu Buana" value="${data.institution || ''}">
+            <label class="form-label">Nama Institusi &amp; Universitas / Institution</label>
+            <input type="text" class="form-input edu-inst" placeholder="Contoh: Universitas Indonesia" value="${data.institution || ''}">
           </div>
           <div class="col-3 form-group">
-            <label class="form-label">Jurusan (Major / Track)</label>
-            <input type="text" class="form-input edu-major" placeholder="Contoh: Teknik Informatika" value="${data.major || ''}">
+            <label class="form-label">Jurusan / Major &amp; Specialization</label>
+            <input type="text" class="form-input edu-major" placeholder="Contoh: Ilmu Komputer / Computer Science" value="${data.major || ''}">
           </div>
           <div class="col-2 form-group">
-            <label class="form-label">Tahun Lulus</label>
+            <label class="form-label">Tahun Lulus / Year</label>
             <input type="text" class="form-input edu-year" placeholder="YYYY" value="${data.yearGraduated || ''}">
           </div>
           <div class="col-3 form-group">
             <label class="form-label">IPK / GPA</label>
-            <input type="text" class="form-input edu-gpa" placeholder="Contoh: 3.53" value="${data.gpa || ''}">
+            <input type="text" class="form-input edu-gpa" placeholder="Contoh: 3.75" value="${data.gpa || ''}">
           </div>
         </div>
       `;
@@ -462,35 +679,35 @@
       card.className = 'repeater-card';
       card.innerHTML = `
         <div class="repeater-card-header">
-          <span class="repeater-badge">Pengalaman Kerja #${index}</span>
+          <span class="repeater-badge">Pengalaman Kerja / Work History #${index}</span>
           <button type="button" class="btn-remove-row" onclick="this.closest('.repeater-card').remove()">
-            ✕ Hapus
+            ✕ Hapus / Delete
           </button>
         </div>
         <div class="form-grid">
           <div class="col-6 form-group">
-            <label class="form-label">Nama Perusahaan (Company Name)</label>
-            <input type="text" class="form-input emp-comp" placeholder="Contoh: PT SAPPHIRE ASSET INTERNATIONAL" value="${data.company || ''}">
+            <label class="form-label">Nama Perusahaan / Company Name</label>
+            <input type="text" class="form-input emp-comp" placeholder="Contoh: PT Nusantara Teknologi Digital" value="${data.company || ''}">
           </div>
           <div class="col-6 form-group">
-            <label class="form-label">Posisi / Jabatan (Job Title)</label>
-            <input type="text" class="form-input emp-title" placeholder="Contoh: IT Manager / Branch Coordinator" value="${data.jobTitle || ''}">
+            <label class="form-label">Posisi &amp; Jabatan / Job Title</label>
+            <input type="text" class="form-input emp-title" placeholder="Contoh: Lead Solutions Architect / Project Manager" value="${data.jobTitle || ''}">
           </div>
           <div class="col-3 form-group">
-            <label class="form-label">Mulai (MM/YYYY)</label>
-            <input type="text" class="form-input emp-start" placeholder="07/2010" value="${data.startDate || ''}">
+            <label class="form-label">Mulai / Start (MM/YYYY)</label>
+            <input type="text" class="form-input emp-start" placeholder="01/2021" value="${data.startDate || ''}">
           </div>
           <div class="col-3 form-group">
-            <label class="form-label">Selesai (MM/YYYY)</label>
-            <input type="text" class="form-input emp-end" placeholder="11/2021 atau Present" value="${data.endDate || ''}">
+            <label class="form-label">Selesai / End (MM/YYYY)</label>
+            <input type="text" class="form-input emp-end" placeholder="Present / Saat ini" value="${data.endDate || ''}">
           </div>
           <div class="col-3 form-group">
-            <label class="form-label">Gaji Terakhir (IDR)</label>
-            <input type="text" class="form-input emp-salary" placeholder="12.000.000" value="${data.finalSalary || ''}">
+            <label class="form-label">Gaji Terakhir / Final Salary (IDR)</label>
+            <input type="text" class="form-input emp-salary" placeholder="Contoh: 22.000.000" value="${data.finalSalary || ''}">
           </div>
           <div class="col-3 form-group">
-            <label class="form-label">Alasan Berhenti</label>
-            <input type="text" class="form-input emp-reason" placeholder="Contoh: Career Transition" value="${data.reasonForLeaving || ''}">
+            <label class="form-label">Alasan Berhenti / Reason for Leaving</label>
+            <input type="text" class="form-input emp-reason" placeholder="Contoh: Pengembangan karier / Career advancement" value="${data.reasonForLeaving || ''}">
           </div>
         </div>
       `;
@@ -504,31 +721,31 @@
       card.className = 'repeater-card';
       card.innerHTML = `
         <div class="repeater-card-header">
-          <span class="repeater-badge">Referensi Profesional #${index}</span>
+          <span class="repeater-badge">Referensi Profesional / Professional Reference #${index}</span>
           <button type="button" class="btn-remove-row" onclick="this.closest('.repeater-card').remove()">
-            ✕ Hapus
+            ✕ Hapus / Delete
           </button>
         </div>
         <div class="form-grid">
           <div class="col-6 form-group">
-            <label class="form-label">Nama Referensi</label>
-            <input type="text" class="form-input ref-name" placeholder="Nama atasan / rekan kerja" value="${data.name || ''}">
+            <label class="form-label">Nama Referensi / Reference Name</label>
+            <input type="text" class="form-input ref-name" placeholder="Nama atasan / rekan kerja (Supervisor / colleague)" value="${data.name || ''}">
           </div>
           <div class="col-6 form-group">
-            <label class="form-label">Perusahaan &amp; Jabatan</label>
-            <input type="text" class="form-input ref-company" placeholder="Nama Perusahaan - Jabatan" value="${data.companyAndTitle || ''}">
+            <label class="form-label">Perusahaan &amp; Jabatan / Company &amp; Title</label>
+            <input type="text" class="form-input ref-company" placeholder="Nama Perusahaan - Posisi (Company - Job Title)" value="${data.companyAndTitle || ''}">
           </div>
           <div class="col-4 form-group">
-            <label class="form-label">Hubungan Kerja</label>
-            <input type="text" class="form-input ref-rel" placeholder="Contoh: Direct Supervisor" value="${data.relationship || ''}">
+            <label class="form-label">Hubungan Kerja / Relationship</label>
+            <input type="text" class="form-input ref-rel" placeholder="Contoh: Atasan Langsung / Direct Supervisor" value="${data.relationship || ''}">
           </div>
           <div class="col-4 form-group">
-            <label class="form-label">Nomor Telepon</label>
-            <input type="tel" class="form-input ref-phone" placeholder="0812xxxx" value="${data.contactNumber || ''}">
+            <label class="form-label">Nomor Telepon / Contact Phone</label>
+            <input type="tel" class="form-input ref-phone" placeholder="Contoh: 081198765432" value="${data.contactNumber || ''}">
           </div>
           <div class="col-4 form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input ref-email" placeholder="referensi@company.com" value="${data.email || ''}">
+            <label class="form-label">Email Referensi / Email</label>
+            <input type="email" class="form-input ref-email" placeholder="referensi@perusahaan.com" value="${data.email || ''}">
           </div>
         </div>
       `;
@@ -561,22 +778,22 @@
     }
 
     /* ==========================================================================
-       AUTOFILL SAMPLE DATA (MATCHING DOCUMENT)
+       AUTOFILL SAMPLE DATA (MOCK / SIMULATED DATA BILINGUAL)
        ========================================================================== */
 
     function populateSampleData() {
-      // Step 1: Personal Particulars
       const setVal = (id, val) => {
         const el = document.getElementById(id);
         if (el) el.value = val;
       };
 
-      setVal('fullName', 'Armendri');
-      setVal('preferredName', 'Armend');
-      setVal('nik', '3173051203811001');
-      setVal('passportNo', '-');
-      setVal('placeOfBirth', 'Binjai');
-      setVal('dateOfBirth', '1981-03-12');
+      // Step 1: Personal Particulars (Simulated Synthetic Data)
+      setVal('fullName', 'Budi Pratama');
+      setVal('preferredName', 'Budi');
+      setVal('nik', '3171011505900001');
+      setVal('passportNo', 'A9876543 / 2029-10-15');
+      setVal('placeOfBirth', 'Jakarta');
+      setVal('dateOfBirth', '1990-05-15');
 
       const genderMale = document.querySelector('input[name="gender"][value="Male"]');
       if (genderMale) genderMale.checked = true;
@@ -587,254 +804,37 @@
       const maritalMarried = document.querySelector('input[name="maritalStatus"][value="Married"]');
       if (maritalMarried) maritalMarried.checked = true;
 
-      // Contact
-      setVal('permanentAddress', 'Jl. Almubarok I No 7 RT 11 RW 06 Kel. Cipulir Kec. Kebayoran Lama');
-      setVal('permanentCityPostal', 'Jakarta Selatan / 12230');
-      setVal('currentAddress', 'Jl. Almubarok I No 7 RT 11 RW 06 Kel. Cipulir Kec. Kebayoran Lama');
-      setVal('currentCityPostal', 'Jakarta Selatan / 12230');
-      setVal('mobileNumber', '081317028494');
-      setVal('personalEmail', 'armendri@gmail.com');
+      // Contact Details (Simulated Address)
+      setVal('permanentAddress', 'Jl. Jenderal Sudirman Kav. 25, RT 003 / RW 002, Kel. Karet Tengsin, Kec. Tanah Abang');
+      setVal('permanentCityPostal', 'Jakarta Pusat / 10220');
+      setVal('currentAddress', 'Jl. Jenderal Sudirman Kav. 25, RT 003 / RW 002, Kel. Karet Tengsin, Kec. Tanah Abang');
+      setVal('currentCityPostal', 'Jakarta Pusat / 10220');
+      setVal('mobileNumber', '081234567890');
+      setVal('personalEmail', 'budi.pratama.simulasi@example.com');
 
-      // Statutory & Tax
-      setVal('npwp', '59.442.056.4-009.000');
-      setVal('noKk', '3174050806210013');
-      setVal('bpjsKesehatan', '0001654602085');
-      setVal('bpjsKetenagakerjaan', '-');
+      // Statutory & Tax (Simulated Numbers)
+      setVal('npwp', '01.234.567.8-012.000');
+      setVal('noKk', '3171010101150001');
+      setVal('bpjsKesehatan', '0001234567890');
+      setVal('bpjsKetenagakerjaan', '01234567890');
 
-      // Step 2: Banking & Payroll
-      setVal('bankName', 'BCA');
-      setVal('bankBranch', 'KCU SCBD');
-      setVal('accountHolderName', 'Armendri');
-      setVal('accountNumber', '0060448183');
+      // Step 2: Banking & Payroll (Simulated)
+      setVal('bankName', 'PT Bank Central Asia Tbk (BCA)');
+      setVal('bankBranch', 'KCU SCBD Sudirman');
+      setVal('accountHolderName', 'Budi Pratama');
+      setVal('accountNumber', '1234567890');
 
-      // Emergency Contact
-      setVal('emergencyName', 'Raudoh');
-      setVal('emergencyRelationship', 'Spouse (Wife)');
-      setVal('emergencyMobile', '081806782414');
-      setVal('emergencyAddress', 'Jl. Almubarok I No. 7 RT 11 RW 06, Cipulir, Kebayoran Lama, Jakarta Selatan');
+      // Emergency Contact (Simulated)
+      setVal('emergencyName', 'Siti Rahmawati');
+      setVal('emergencyRelationship', 'Pasangan (Istri) / Spouse (Wife)');
+      setVal('emergencyMobile', '081987654321');
+      setVal('emergencyAddress', 'Jl. Jenderal Sudirman Kav. 25, RT 003 / RW 002, Jakarta Pusat / 10220');
 
-      // Family Members
+      // Family Members & Dependents (Simulated Bilingual)
       if (familyRepeater) {
         familyRepeater.innerHTML = '';
-        addFamilyRow({ relationship: 'Spouse', name: 'Siti Raudoh', nik: '3173055605830013', dob: '1983-05-16', genderOrOccupation: 'Female' });
-        addFamilyRow({ relationship: 'Child 1', name: 'Aira Puti Azzahra', nik: '3173056611131001', dob: '2013-11-26', genderOrOccupation: 'Female' });
-        addFamilyRow({ relationship: 'Child 2', name: 'Arkan Atharizz Calief', nik: '3173050111141010', dob: '2014-11-01', genderOrOccupation: 'Male' });
-        addFamilyRow({ relationship: 'Child 3', name: 'Arsyila Qanita Farzana', nik: '3173055307190006', dob: '2019-07-13', genderOrOccupation: 'Female' });
+        addFamilyRow({ relationship: 'Spouse', name: 'Siti Rahmawati', nik: '3171016508920002', dob: '1992-08-25', genderOrOccupation: 'Wanita / Karyawan Swasta (Female / Finance Specialist)' });
+        addFamilyRow({ relationship: 'Child 1', name: 'Dimas Rizky Pratama', nik: '3171011204180003', dob: '2018-04-12', genderOrOccupation: 'Pria / Pelajar (Male / Student)' });
+        addFamilyRow({ relationship: 'Child 2', name: 'Nayla Putri Pratama', nik: '3171012509210004', dob: '2021-09-25', genderOrOccupation: 'Wanita / Balita (Female / Child)' });
       }
 
-      // Step 3: Education
-      if (educationRepeater) {
-        educationRepeater.innerHTML = '';
-        addEducationRow({ level: 'University S1', institution: 'Universitas Mercu Buana', major: 'Teknik Informatika', yearGraduated: '2007', gpa: '3.53' });
-        addEducationRow({ level: 'University D3', institution: 'Institut Pertanian Bogor', major: 'Informatika', yearGraduated: '2003', gpa: '2.99' });
-        addEducationRow({ level: 'High School', institution: 'SMAN 2 Bukittinggi', major: 'IPA', yearGraduated: '2000', gpa: 'N/A' });
-      }
-
-      // Employment
-      if (employmentRepeater) {
-        employmentRepeater.innerHTML = '';
-        addEmploymentRow({ company: 'PT CAHAYA MUTIARA MANDIRI', jobTitle: 'Project Supervisor / PIC', startDate: '07/2026', endDate: 'Present', finalSalary: '7.000.000', reasonForLeaving: 'Project contract completion & seeking permanent career growth' });
-        addEmploymentRow({ company: 'ARRA LAUNDRY', jobTitle: 'Owner & Operations Manager', startDate: '11/2021', endDate: '07/2026', finalSalary: '-', reasonForLeaving: 'Business Unstabilized & returning to corporate IT leadership' });
-        addEmploymentRow({ company: 'PT SAPPHIRE ASSET INTERNATIONAL (SOLID GROUP)', jobTitle: 'IT Manager / Branch Coordinator', startDate: '07/2010', endDate: '11/2021', finalSalary: '12.000.000', reasonForLeaving: 'Career Transition & Seeking New Challenge' });
-        addEmploymentRow({ company: 'PT SOLID GOLD BERJANGKA', jobTitle: 'IT Supervisor', startDate: '02/2008', endDate: '07/2010', finalSalary: '6.000.000', reasonForLeaving: 'Promotion / Career advancement to IT Manager' });
-        addEmploymentRow({ company: 'PT INDOPRATAMA TELEGLOBAL', jobTitle: 'VoIP Engineer', startDate: '03/2006', endDate: '12/2007', finalSalary: '4.000.000', reasonForLeaving: 'Career progression in IT infrastructure' });
-      }
-
-      // References
-      if (referenceRepeater) {
-        referenceRepeater.innerHTML = '';
-        addReferenceRow({ name: 'Available Upon Request', companyAndTitle: 'Will provide after interview / conditional offer', relationship: 'Direct Supervisor', contactNumber: '-', email: '-' });
-      }
-
-      // Languages
-      setVal('langEnglishSpoken', 'Average');
-      setVal('langEnglishWritten', 'Good');
-      setVal('langIndoSpoken', 'Good');
-      setVal('langIndoWritten', 'Good');
-      setVal('langMandarinSpoken', 'Weak');
-      setVal('langMandarinWritten', 'Weak');
-
-      // Step 5: Declaration & Sign
-      setVal('printedName', 'Armendri');
-      setVal('declarationDate', new Date().toISOString().split('T')[0]);
-
-      drawSimulatedSignature();
-      showToast('Data formulir telah berhasil diisi dari contoh dokumen!', 'success');
-    }
-
-    function drawSimulatedSignature() {
-      if (!signatureCanvas || !signatureCtx) return;
-      resizeSignatureCanvas();
-      clearSignature();
-      signatureCtx.beginPath();
-      signatureCtx.moveTo(80, 100);
-      signatureCtx.bezierCurveTo(120, 40, 150, 140, 200, 70);
-      signatureCtx.bezierCurveTo(240, 50, 220, 120, 280, 95);
-      signatureCtx.lineTo(340, 95);
-      signatureCtx.stroke();
-      hasDrawnSignature = true;
-      if (signatureBox) signatureBox.classList.add('has-signature');
-    }
-
-    /* ==========================================================================
-       FORM SUBMISSION & GAS API INTEGRATION
-       ========================================================================== */
-
-    async function handleFormSubmit(e) {
-      e.preventDefault();
-
-      if (!validateCurrentStep()) return;
-
-      const formData = new FormData(form);
-      const payload = Object.fromEntries(formData.entries());
-
-      payload.dependents = [];
-      document.querySelectorAll('#familyRepeater .repeater-card').forEach(card => {
-        payload.dependents.push({
-          relationship: card.querySelector('.fam-rel')?.value || '',
-          name: card.querySelector('.fam-name')?.value || '',
-          nik: card.querySelector('.fam-nik')?.value || '',
-          dob: card.querySelector('.fam-dob')?.value || '',
-          genderOrOccupation: card.querySelector('.fam-occ')?.value || ''
-        });
-      });
-
-      payload.education = [];
-      document.querySelectorAll('#educationRepeater .repeater-card').forEach(card => {
-        payload.education.push({
-          level: card.querySelector('.edu-level')?.value || '',
-          institution: card.querySelector('.edu-inst')?.value || '',
-          major: card.querySelector('.edu-major')?.value || '',
-          yearGraduated: card.querySelector('.edu-year')?.value || '',
-          gpa: card.querySelector('.edu-gpa')?.value || ''
-        });
-      });
-
-      payload.employmentHistory = [];
-      document.querySelectorAll('#employmentRepeater .repeater-card').forEach(card => {
-        payload.employmentHistory.push({
-          company: card.querySelector('.emp-comp')?.value || '',
-          jobTitle: card.querySelector('.emp-title')?.value || '',
-          startDate: card.querySelector('.emp-start')?.value || '',
-          endDate: card.querySelector('.emp-end')?.value || '',
-          finalSalary: card.querySelector('.emp-salary')?.value || '',
-          reasonForLeaving: card.querySelector('.emp-reason')?.value || ''
-        });
-      });
-
-      payload.references = [];
-      document.querySelectorAll('#referenceRepeater .repeater-card').forEach(card => {
-        payload.references.push({
-          name: card.querySelector('.ref-name')?.value || '',
-          companyAndTitle: card.querySelector('.ref-company')?.value || '',
-          relationship: card.querySelector('.ref-rel')?.value || '',
-          contactNumber: card.querySelector('.ref-phone')?.value || '',
-          email: card.querySelector('.ref-email')?.value || ''
-        });
-      });
-
-      payload.signatureData = hasDrawnSignature ? signatureCanvas.toDataURL('image/png') : '';
-
-      const originalBtnText = btnSubmit.innerHTML;
-      btnSubmit.disabled = true;
-      btnSubmit.innerHTML = `<span class="spinner"></span> Mengirim ke Google Sheets...`;
-
-      const gasUrl = (localStorage.getItem('novarix_gas_url') || '').trim();
-
-      try {
-        if (!gasUrl) {
-          await new Promise(resolve => setTimeout(resolve, 1200));
-          const demoId = 'NG-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.floor(1000 + Math.random() * 9000);
-          showSuccessModal(demoId, new Date().toLocaleString('id-ID'), true);
-          return;
-        }
-
-        const response = await fetch(gasUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const resData = await response.json();
-
-        if (resData.status === 'success') {
-          showSuccessModal(resData.submissionId, resData.timestamp || new Date().toLocaleString('id-ID'), false);
-        } else {
-          throw new Error(resData.message || 'Terjadi kesalahan pada Google Apps Script.');
-        }
-
-      } catch (err) {
-        console.warn('GAS Fetch Warning:', err);
-        showToast('Data dikirim! Jika sheet belum terisi, pastikan izin deployment GAS diatur ke "Anyone".', 'warning');
-        const fallbackId = 'NG-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14);
-        showSuccessModal(fallbackId, new Date().toLocaleString('id-ID'), false);
-      } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerHTML = originalBtnText;
-      }
-    }
-
-    function showSuccessModal(id, time, isDemo) {
-      if (!successModal) return;
-      if (successIdEl) successIdEl.textContent = id;
-      if (successTimeEl) successTimeEl.textContent = time;
-
-      const desc = document.getElementById('successDesc');
-      if (desc) {
-        if (isDemo) {
-          desc.innerHTML = `
-            <strong>Simulasi Mode Demo Berhasil!</strong><br>
-            Untuk menyimpan langsung ke Google Sheets Anda, masukkan URL Web App Google Apps Script Anda melalui tombol <strong>⚙️ GAS API</strong> di pojok kanan atas.
-          `;
-        } else {
-          desc.innerHTML = `
-            Data formulir onboarding telah berhasil dikirim dan tersimpan rapi di spreadsheet Google Anda.
-          `;
-        }
-      }
-      successModal.classList.add('open');
-    }
-
-    function updateStatusBadge(url) {
-      if (!statusBadge) return;
-      if (url && url.startsWith('http')) {
-        statusBadge.className = 'badge-tag connected';
-        statusBadge.innerHTML = '<span class="status-dot"></span> GAS Connected';
-      } else {
-        statusBadge.className = 'badge-tag info';
-        statusBadge.innerHTML = 'Demo Simulation';
-      }
-    }
-
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      if (!container) return;
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-
-      let icon = 'ℹ️';
-      if (type === 'success') icon = '✅';
-      if (type === 'error') icon = '❌';
-      if (type === 'warning') icon = '⚠️';
-
-      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 4000);
-    }
-  }
-
-  // Initialize once DOM is ready or immediately if already loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
-  } else {
-    initApp();
-  }
-})();
