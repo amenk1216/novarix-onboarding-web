@@ -884,28 +884,154 @@ body {
   }
 }
 
-/* Print Friendly Styles replicating the physical document */
-@media print {
-  .app-header, .ambient-glow, .stepper-nav, .wizard-footer, .header-actions, .toast-container, .btn-remove-row, .btn-outline-primary {
+/* Screen View: Hide print template */
+@media screen {
+  #printDocumentTemplate {
     display: none !important;
   }
-  
-  body, .main-container {
-    background: #fff !important;
-    padding: 0 !important;
+}
+
+/* Print View: Exact 5-page official document matching Novarix Global template */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm 12mm 15mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: Arial, Helvetica, sans-serif !important;
     margin: 0 !important;
-    color: #000 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  .section-card {
-    border: 1px solid #000 !important;
-    box-shadow: none !important;
-    page-break-inside: avoid;
-    margin-bottom: 15px !important;
-    padding: 12px !important;
+  /* Hide entire interactive form UI when printing */
+  .app-header,
+  .ambient-glow,
+  .main-container,
+  .modal-overlay,
+  .toast-container {
+    display: none !important;
   }
 
-  .form-step-content {
+  #printDocumentTemplate {
     display: block !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .print-page {
+    page-break-after: always;
+    break-after: page;
+    min-height: 265mm;
+    position: relative;
+    box-sizing: border-box;
+    padding-bottom: 25px;
+    font-size: 9pt;
+    line-height: 1.35;
+  }
+
+  .print-page:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .print-header {
+    margin-bottom: 10px;
+  }
+
+  .company-title {
+    font-size: 15pt;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+    color: #000;
+  }
+
+  .form-title {
+    font-size: 11pt;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #000;
+  }
+
+  .form-instructions {
+    font-size: 7.8pt;
+    font-style: italic;
+    color: #333;
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+
+  .print-divider {
+    border: none;
+    border-top: 2px solid #000;
+    margin: 6px 0 10px 0;
+  }
+
+  .print-section-title {
+    font-size: 9.5pt;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    color: #000;
+  }
+
+  .print-section-subtitle {
+    font-size: 8pt;
+    font-style: italic;
+    color: #444;
+    margin-bottom: 5px;
+  }
+
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    font-size: 8.5pt;
+  }
+
+  .print-table th,
+  .print-table td {
+    border: 1px solid #000;
+    padding: 4px 6px;
+    vertical-align: middle;
+    text-align: left;
+    color: #000;
+  }
+
+  .print-table th {
+    background-color: #f3f4f6 !important;
+    font-weight: bold;
+    font-size: 8pt;
+  }
+
+  .print-note {
+    font-size: 8pt;
+    color: #333;
+    margin: 5px 0;
+    line-height: 1.35;
+  }
+
+  .print-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+    font-size: 8pt;
+    font-style: italic;
+    color: #444;
+  }
+
+  .multiline-text {
+    white-space: pre-wrap;
+    line-height: 1.35;
   }
 }
