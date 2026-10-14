@@ -269,34 +269,45 @@ body {
 
 .stepper-list {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   list-style: none;
   position: relative;
+  margin: 0;
+  padding: 0;
 }
 
-.stepper-list::before {
-  content: "";
+/* Connecting track running directly through the vertical center of the step bubbles */
+.stepper-track {
   position: absolute;
   top: 20px;
-  left: 40px;
-  right: 40px;
-  height: 2px;
+  left: 10%;
+  width: 80%;
+  height: 3px;
   background: var(--border-color);
   z-index: 1;
+  transform: translateY(-50%);
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  overflow: hidden;
 }
 
+/* Active progress fill line that expands along the track */
 .stepper-progress-fill {
   position: absolute;
-  top: 20px;
-  left: 40px;
-  height: 2px;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
   background: var(--primary-light);
+  border-radius: var(--radius-full);
   z-index: 2;
-  transition: width var(--transition-normal);
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .step-item {
+  flex: 1 1 0;
+  min-width: 0;
   position: relative;
   z-index: 3;
   display: flex;
@@ -304,6 +315,7 @@ body {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  text-align: center;
 }
 
 .step-bubble {
@@ -319,6 +331,7 @@ body {
   font-weight: 700;
   font-size: 0.9rem;
   transition: all var(--transition-fast);
+  box-shadow: 0 0 0 4px var(--bg-card);
 }
 
 .step-label {
@@ -1341,8 +1354,11 @@ body {
 
     <!-- Stepper Navigation -->
     <nav class="stepper-nav" aria-label="Progress Tahapan / Step Progress">
-      <div class="stepper-progress-fill" id="stepperProgressFill"></div>
       <ol class="stepper-list">
+        <!-- Connecting Line: Track (Grey) & Fill (Active Blue) aligned right through the bubble centers -->
+        <div class="stepper-track" id="stepperTrack" aria-hidden="true">
+          <div class="stepper-progress-fill" id="stepperProgressFill"></div>
+        </div>
         <li class="step-item active" data-step="1" id="stepIndicator1">
           <div class="step-bubble">1</div>
           <span class="step-label">Data Diri &amp; Pajak<small>Personal &amp; Tax</small></span>
@@ -2657,8 +2673,10 @@ body {
       form.addEventListener('submit', handleFormSubmit);
     }
 
-    // Update Stepper Progress UI
+    // Update Stepper Progress UI & Alignment
     updateStepperUI();
+    window.addEventListener('resize', alignStepperTrack);
+    window.addEventListener('load', alignStepperTrack);
 
     /* ==========================================================================
        STEPPER NAVIGATION & VALIDATION
@@ -2687,6 +2705,29 @@ body {
       window.scrollTo({ top: 120, behavior: 'smooth' });
     }
 
+    function alignStepperTrack() {
+      const stepperList = document.querySelector('.stepper-list');
+      const stepperTrack = document.getElementById('stepperTrack');
+      const bubbles = document.querySelectorAll('.step-item .step-bubble');
+      if (!stepperList || !stepperTrack || bubbles.length < 2) return;
+
+      const firstBubble = bubbles[0];
+      const lastBubble = bubbles[bubbles.length - 1];
+      const listRect = stepperList.getBoundingClientRect();
+      const firstRect = firstBubble.getBoundingClientRect();
+      const lastRect = lastBubble.getBoundingClientRect();
+
+      if (listRect.width > 0 && firstRect.width > 0 && lastRect.width > 0) {
+        const startX = (firstRect.left + firstRect.width / 2) - listRect.left;
+        const endX = (lastRect.left + lastRect.width / 2) - listRect.left;
+        const centerY = (firstRect.top + firstRect.height / 2) - listRect.top;
+
+        stepperTrack.style.left = `${startX}px`;
+        stepperTrack.style.width = `${endX - startX}px`;
+        stepperTrack.style.top = `${centerY}px`;
+      }
+    }
+
     function updateStepperUI() {
       if (btnPrev) btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
       if (currentStep === totalSteps) {
@@ -2709,8 +2750,10 @@ body {
 
       if (stepperProgressFill) {
         const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
-        stepperProgressFill.style.width = `calc(${progressPercent}% - 30px)`;
+        stepperProgressFill.style.width = `${progressPercent}%`;
       }
+
+      alignStepperTrack();
     }
 
     function validateCurrentStep() {
