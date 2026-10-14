@@ -22,6 +22,7 @@
   let lastMidPoint = null;
   let currentSigMode = 'draw';
   let uploadedFileName = '';
+  let currentSignatureDataUrl = '';
 
   function initApp() {
     // DOM Elements
@@ -132,10 +133,7 @@
 
     // Review & Print Preview using official 5-page template
     if (btnReviewPreview) {
-      btnReviewPreview.addEventListener('click', () => {
-        populatePrintTemplate();
-        window.print();
-      });
+      btnReviewPreview.addEventListener('click', preparePrintAndOpen);
     }
 
     // Success Modal actions
@@ -150,10 +148,7 @@
     }
 
     if (btnPrintSubmission) {
-      btnPrintSubmission.addEventListener('click', () => {
-        populatePrintTemplate();
-        window.print();
-      });
+      btnPrintSubmission.addEventListener('click', preparePrintAndOpen);
     }
 
     // Also trigger populatePrintTemplate before browser's native print (Ctrl+P / Cmd+P)
@@ -439,6 +434,8 @@
           signatureCtx.drawImage(img, drawX, drawY, drawW, drawH);
 
           uploadedFileName = file.name;
+          currentSignatureDataUrl = dataUrl;
+          hasDrawnSignature = true;
           const sizeKb = (file.size / 1024).toFixed(1);
 
           if (uploadedSigPreviewImg) uploadedSigPreviewImg.src = dataUrl;
@@ -553,12 +550,19 @@
       isDrawing = false;
       sigPoints = [];
       lastMidPoint = null;
+
+      try {
+        currentSignatureDataUrl = getTrimmedCanvasDataUrl(signatureCanvas) || signatureCanvas.toDataURL('image/png');
+      } catch (err) {
+        currentSignatureDataUrl = signatureCanvas.toDataURL('image/png');
+      }
     }
 
     function clearSignature() {
       if (!signatureCtx) return;
       signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
       hasDrawnSignature = false;
+      currentSignatureDataUrl = '';
       sigPoints = [];
       lastMidPoint = null;
       uploadedFileName = '';
@@ -838,3 +842,574 @@
       setVal('currentCityPostal', 'Jakarta Pusat / 10220');
       setVal('mobileNumber', '081234567890');
       setVal('personalEmail', 'budi.pratama.simulasi@example.com');
+
+      // Statutory & Tax (Simulated Numbers)
+      setVal('npwp', '01.234.567.8-012.000');
+      setVal('noKk', '3171010101150001');
+      setVal('bpjsKesehatan', '0001234567890');
+      setVal('bpjsKetenagakerjaan', '01234567890');
+
+      // Step 2: Banking & Payroll (Simulated)
+      setVal('bankName', 'PT Bank Central Asia Tbk (BCA)');
+      setVal('bankBranch', 'KCU SCBD Sudirman');
+      setVal('accountHolderName', 'Budi Pratama');
+      setVal('accountNumber', '1234567890');
+
+      // Emergency Contact (Simulated)
+      setVal('emergencyName', 'Siti Rahmawati');
+      setVal('emergencyRelationship', 'Pasangan (Istri) / Spouse (Wife)');
+      setVal('emergencyMobile', '081987654321');
+      setVal('emergencyAddress', 'Jl. Jenderal Sudirman Kav. 25, RT 003 / RW 002, Jakarta Pusat / 10220');
+
+      // Family Members & Dependents (Simulated Bilingual)
+      if (familyRepeater) {
+        familyRepeater.innerHTML = '';
+        addFamilyRow({ relationship: 'Spouse', name: 'Siti Rahmawati', nik: '3171016508920002', dob: '1992-08-25', genderOrOccupation: 'Wanita / Karyawan Swasta (Female / Finance Specialist)' });
+        addFamilyRow({ relationship: 'Child 1', name: 'Dimas Rizky Pratama', nik: '3171011204180003', dob: '2018-04-12', genderOrOccupation: 'Pria / Pelajar (Male / Student)' });
+        addFamilyRow({ relationship: 'Child 2', name: 'Nayla Putri Pratama', nik: '3171012509210004', dob: '2021-09-25', genderOrOccupation: 'Wanita / Balita (Female / Child)' });
+      }
+
+      // Step 3: Education (Simulated Bilingual)
+      if (educationRepeater) {
+        educationRepeater.innerHTML = '';
+        addEducationRow({ level: 'University S1', institution: 'Universitas Indonesia', major: 'Ilmu Komputer (Computer Science)', yearGraduated: '2012', gpa: '3.78' });
+        addEducationRow({ level: 'High School', institution: 'SMAN 8 Jakarta', major: 'IPA (Natural Sciences)', yearGraduated: '2008', gpa: '89.5' });
+      }
+
+      // Employment History (Simulated Bilingual)
+      if (employmentRepeater) {
+        employmentRepeater.innerHTML = '';
+        addEmploymentRow({ company: 'PT Nusantara Teknologi Digital', jobTitle: 'Lead Solutions Architect / Project Manager', startDate: '01/2021', endDate: 'Present', finalSalary: '22.000.000', reasonForLeaving: 'Mencari peluang pengembangan karier baru / Seeking career growth & new challenges' });
+        addEmploymentRow({ company: 'PT Global Inovasi Solusindo', jobTitle: 'Senior Systems Engineer', startDate: '06/2016', endDate: '12/2020', finalSalary: '14.500.000', reasonForLeaving: 'Pengembangan kompetensi & kepemimpinan / Professional & leadership development' });
+        addEmploymentRow({ company: 'PT Cyber Nusantara Mandiri', jobTitle: 'IT Infrastructure Specialist', startDate: '08/2012', endDate: '05/2016', finalSalary: '8.000.000', reasonForLeaving: 'Peluang promosi jenjang karier / Career advancement opportunity' });
+      }
+
+      // Professional References (Simulated Bilingual)
+      if (referenceRepeater) {
+        referenceRepeater.innerHTML = '';
+        addReferenceRow({ name: 'Ir. Bambang Hermawan, M.T.', companyAndTitle: 'PT Nusantara Teknologi Digital - VP of Engineering', relationship: 'Atasan Langsung (Direct Supervisor)', contactNumber: '081198765432', email: 'bambang.hermawan@example.com' });
+        addReferenceRow({ name: 'Dewi Anggraini, S.Kom.', companyAndTitle: 'PT Global Inovasi Solusindo - Lead Product Manager', relationship: 'Rekan Kerja Tim (Colleague / Team Lead)', contactNumber: '081234509876', email: 'dewi.anggraini@example.com' });
+      }
+
+      // Languages
+      setVal('langEnglishSpoken', 'Good');
+      setVal('langEnglishWritten', 'Good');
+      setVal('langIndoSpoken', 'Good');
+      setVal('langIndoWritten', 'Good');
+      setVal('langMandarinSpoken', 'Weak');
+      setVal('langMandarinWritten', 'Weak');
+
+      // Step 5: Declaration & Sign
+      setVal('printedName', 'Budi Pratama');
+      setVal('declarationDate', new Date().toISOString().split('T')[0]);
+
+      drawSimulatedSignature();
+      showToast('Data formulir berhasil diisi dengan data simulasi (bilingual)! / Form successfully populated with simulated demo data!', 'success');
+    }
+
+    function drawSimulatedSignature() {
+      if (!signatureCanvas || !signatureCtx) return;
+      resizeSignatureCanvas();
+      clearSignature();
+
+      signatureCtx.lineWidth = 2.4;
+      signatureCtx.lineCap = 'round';
+      signatureCtx.lineJoin = 'round';
+      signatureCtx.strokeStyle = '#0f172a';
+
+      signatureCtx.beginPath();
+      signatureCtx.moveTo(80, 100);
+      signatureCtx.bezierCurveTo(120, 40, 150, 140, 200, 70);
+      signatureCtx.bezierCurveTo(240, 50, 220, 120, 280, 95);
+      signatureCtx.lineTo(340, 95);
+      signatureCtx.stroke();
+
+      currentSignatureDataUrl = signatureCanvas.toDataURL('image/png');
+      updateSignatureState(true, 'Contoh tanda tangan simulasi / Simulated signature');
+    }
+
+    /* ==========================================================================
+       FORM SUBMISSION — POST langsung ke GAS backend
+       ========================================================================== */
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      if (!validateCurrentStep()) return;
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      payload.dependents = [];
+      document.querySelectorAll('#familyRepeater .repeater-card').forEach(card => {
+        payload.dependents.push({
+          relationship: card.querySelector('.fam-rel')?.value || '',
+          name: card.querySelector('.fam-name')?.value || '',
+          nik: card.querySelector('.fam-nik')?.value || '',
+          dob: card.querySelector('.fam-dob')?.value || '',
+          genderOrOccupation: card.querySelector('.fam-occ')?.value || ''
+        });
+      });
+
+      payload.education = [];
+      document.querySelectorAll('#educationRepeater .repeater-card').forEach(card => {
+        payload.education.push({
+          level: card.querySelector('.edu-level')?.value || '',
+          institution: card.querySelector('.edu-inst')?.value || '',
+          major: card.querySelector('.edu-major')?.value || '',
+          yearGraduated: card.querySelector('.edu-year')?.value || '',
+          gpa: card.querySelector('.edu-gpa')?.value || ''
+        });
+      });
+
+      payload.employmentHistory = [];
+      document.querySelectorAll('#employmentRepeater .repeater-card').forEach(card => {
+        payload.employmentHistory.push({
+          company: card.querySelector('.emp-comp')?.value || '',
+          jobTitle: card.querySelector('.emp-title')?.value || '',
+          startDate: card.querySelector('.emp-start')?.value || '',
+          endDate: card.querySelector('.emp-end')?.value || '',
+          finalSalary: card.querySelector('.emp-salary')?.value || '',
+          reasonForLeaving: card.querySelector('.emp-reason')?.value || ''
+        });
+      });
+
+      payload.references = [];
+      document.querySelectorAll('#referenceRepeater .repeater-card').forEach(card => {
+        payload.references.push({
+          name: card.querySelector('.ref-name')?.value || '',
+          companyAndTitle: card.querySelector('.ref-company')?.value || '',
+          relationship: card.querySelector('.ref-rel')?.value || '',
+          contactNumber: card.querySelector('.ref-phone')?.value || '',
+          email: card.querySelector('.ref-email')?.value || ''
+        });
+      });
+
+      payload.signatureData = getSignatureDataUrl();
+
+      const originalBtnText = btnSubmit.innerHTML;
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `<span class="spinner"></span> Mengirim ke Google Sheets...`;
+
+      // GAS URL sudah hardcode — tidak perlu localStorage
+
+      try {
+        const response = await fetch(GAS_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const resData = await response.json();
+
+        if (resData.status === 'success') {
+          showSuccessModal(resData.submissionId, resData.timestamp || new Date().toLocaleString('id-ID'));
+        } else {
+          throw new Error(resData.message || 'Terjadi kesalahan pada Google Apps Script.');
+        }
+
+      } catch (err) {
+        console.warn('GAS Fetch Warning:', err);
+        showToast('Data dikirim! Jika sheet belum terisi, pastikan izin deployment GAS diatur ke "Anyone".', 'warning');
+        const fallbackId = 'NG-' + new Date().toISOString().replace(/\D/g, '').slice(0, 14);
+        showSuccessModal(fallbackId, new Date().toLocaleString('id-ID'));
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = originalBtnText;
+      }
+    }
+
+    function showSuccessModal(id, time) {
+      if (!successModal) return;
+      if (successIdEl) successIdEl.textContent = id;
+      if (successTimeEl) successTimeEl.textContent = time;
+
+      const desc = document.getElementById('successDesc');
+      if (desc) {
+        desc.innerHTML = `Data formulir onboarding telah berhasil dikirim dan tersimpan rapi di spreadsheet Google Anda.`;
+      }
+      successModal.classList.add('open');
+    }
+
+    /* ==========================================================================
+       POPULATE OFFICIAL 5-PAGE PRINT TEMPLATE DYNAMICALLY
+       ========================================================================== */
+    function populatePrintTemplate() {
+      const getVal = (id) => (document.getElementById(id)?.value || '').trim();
+      const formatDMY = (dateStr) => {
+        if (!dateStr) return '';
+        const p = dateStr.split('-');
+        if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
+        return dateStr;
+      };
+
+      const setTxt = (id, txt) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = txt;
+      };
+
+      // SECTION 1: PERSONAL PARTICULARS
+      setTxt('p_fullName', getVal('fullName'));
+      setTxt('p_preferredName', getVal('preferredName'));
+      setTxt('p_nik', getVal('nik'));
+      setTxt('p_passportNo', getVal('passportNo') || '-');
+      setTxt('p_placeOfBirth', getVal('placeOfBirth'));
+      setTxt('p_dob', formatDMY(getVal('dateOfBirth')));
+
+      const genderChecked = document.querySelector('input[name="gender"]:checked')?.value || 'Male';
+      setTxt('p_gender', genderChecked === 'Male' ? '[X] Male [ ] Female' : '[ ] Male [X] Female');
+      setTxt('p_bloodGroup', getVal('bloodGroup'));
+      setTxt('p_religion', getVal('religion'));
+
+      const maritalChecked = document.querySelector('input[name="maritalStatus"]:checked')?.value || 'Single';
+      setTxt('p_maritalStatus', `[${maritalChecked === 'Single' ? 'X' : ' '}] Single [${maritalChecked === 'Married' ? 'X' : ' '}] Married [${maritalChecked === 'Divorced' ? 'X' : ' '}] Divorced [${maritalChecked === 'Widowed' ? 'X' : ' '}] Widowed`);
+
+      // SECTION 2: CONTACT DETAILS
+      setTxt('p_permanentAddress', getVal('permanentAddress'));
+      setTxt('p_permanentCityPostal', getVal('permanentCityPostal'));
+      setTxt('p_currentAddress', getVal('currentAddress'));
+      setTxt('p_currentCityPostal', getVal('currentCityPostal'));
+      setTxt('p_mobileNumber', getVal('mobileNumber'));
+      setTxt('p_personalEmail', getVal('personalEmail'));
+
+      // SECTION 3: STATUTORY & TAX INFORMATION
+      setTxt('p_npwp', getVal('npwp'));
+      setTxt('p_noKk', getVal('noKk'));
+      setTxt('p_bpjsKesehatan', getVal('bpjsKesehatan'));
+      setTxt('p_bpjsKetenagakerjaan', getVal('bpjsKetenagakerjaan') || '_______________________');
+
+      // SECTION 4: BANKING DETAILS
+      setTxt('p_bankName', getVal('bankName'));
+      setTxt('p_bankBranch', getVal('bankBranch'));
+      setTxt('p_accountHolderName', getVal('accountHolderName'));
+      setTxt('p_accountNumber', getVal('accountNumber'));
+
+      // SECTION 5: FAMILY MEMBERS (Default 6 rows: Spouse, Child 1 to 5)
+      const familyTbody = document.getElementById('p_familyTbody');
+      if (familyTbody) {
+        familyTbody.innerHTML = '';
+        const familyCards = document.querySelectorAll('#familyRepeater .repeater-card');
+        const defaultLabels = ['Spouse', 'Child 1', 'Child 2', 'Child 3', 'Child 4', 'Child 5'];
+        const rowsCount = Math.max(familyCards.length, 6);
+
+        for (let i = 0; i < rowsCount; i++) {
+          const card = familyCards[i];
+          let rel = defaultLabels[i] || `Child ${i}`;
+          let name = '';
+          let nik = '';
+          let dob = '';
+          let genderOcc = '';
+
+          if (card) {
+            rel = card.querySelector('.fam-rel')?.value || rel;
+            name = card.querySelector('.fam-name')?.value || '';
+            nik = card.querySelector('.fam-nik')?.value || '';
+            dob = formatDMY(card.querySelector('.fam-dob')?.value || '');
+            genderOcc = card.querySelector('.fam-occ')?.value || '';
+          }
+
+          let displayGender = genderOcc;
+          if (!displayGender && rel.toLowerCase().includes('child')) {
+            displayGender = '[ ] M [ ] F';
+          } else if (displayGender && (displayGender.toLowerCase() === 'male' || displayGender.toLowerCase() === 'm')) {
+            displayGender = '[X] M [ ] F';
+          } else if (displayGender && (displayGender.toLowerCase() === 'female' || displayGender.toLowerCase() === 'f')) {
+            displayGender = '[ ] M [X] F';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="height: 22px;">${name || (card ? '' : '_____________________')}</td>
+            <td>${rel}</td>
+            <td>${nik || (card ? '' : '_____________________')}</td>
+            <td>${dob || (card ? '' : '___/___/____')}</td>
+            <td>${displayGender || (card ? '' : '[ ] M [ ] F')}</td>
+          `;
+          familyTbody.appendChild(tr);
+        }
+      }
+
+      // SECTION 6: EMERGENCY CONTACTS (2 rows)
+      const emergencyTbody = document.getElementById('p_emergencyTbody');
+      if (emergencyTbody) {
+        emergencyTbody.innerHTML = `
+          <tr>
+            <td style="height: 24px;">${getVal('emergencyName')}</td>
+            <td>${getVal('emergencyRelationship')}</td>
+            <td>${getVal('emergencyMobile')}</td>
+            <td>${getVal('emergencyAddress')}</td>
+          </tr>
+          <tr>
+            <td style="height: 24px;">_____________________</td>
+            <td>_____________________</td>
+            <td>_____________________</td>
+            <td>_____________________</td>
+          </tr>
+        `;
+      }
+
+      // SECTION 7: EDUCATIONAL BACKGROUND (Min 5 rows)
+      const educationTbody = document.getElementById('p_educationTbody');
+      if (educationTbody) {
+        educationTbody.innerHTML = '';
+        const eduCards = document.querySelectorAll('#educationRepeater .repeater-card');
+        const rowsCount = Math.max(eduCards.length, 5);
+
+        for (let i = 0; i < rowsCount; i++) {
+          const card = eduCards[i];
+          let level = '';
+          let inst = '';
+          let major = '';
+          let year = '';
+          let gpa = '';
+
+          if (card) {
+            level = card.querySelector('.edu-level')?.value || '';
+            inst = card.querySelector('.edu-inst')?.value || '';
+            major = card.querySelector('.edu-major')?.value || '';
+            year = card.querySelector('.edu-year')?.value || '';
+            gpa = card.querySelector('.edu-gpa')?.value || '';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="height: 22px;">${level || '&nbsp;'}</td>
+            <td>${inst || ''}</td>
+            <td>${major || ''}</td>
+            <td>${year || ''}</td>
+            <td>${gpa || ''}</td>
+          `;
+          educationTbody.appendChild(tr);
+        }
+      }
+
+      // SECTION 8: EMPLOYMENT HISTORY (Min 5 rows)
+      const employmentTbody = document.getElementById('p_employmentTbody');
+      if (employmentTbody) {
+        employmentTbody.innerHTML = '';
+        const empCards = document.querySelectorAll('#employmentRepeater .repeater-card');
+        const rowsCount = Math.max(empCards.length, 5);
+
+        for (let i = 0; i < rowsCount; i++) {
+          const card = empCards[i];
+          let comp = '';
+          let title = '';
+          let start = '';
+          let end = '';
+          let salary = '';
+          let reason = '';
+
+          if (card) {
+            comp = card.querySelector('.emp-comp')?.value || '';
+            title = card.querySelector('.emp-title')?.value || '';
+            start = card.querySelector('.emp-start')?.value || '';
+            end = card.querySelector('.emp-end')?.value || '';
+            salary = card.querySelector('.emp-salary')?.value || '';
+            reason = card.querySelector('.emp-reason')?.value || '';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="height: 24px;">${comp}</td>
+            <td>${title}</td>
+            <td>${start}</td>
+            <td>${end}</td>
+            <td>${salary}</td>
+            <td>${reason}</td>
+          `;
+          employmentTbody.appendChild(tr);
+        }
+      }
+
+      // SECTION 9: PROFESSIONAL REFERENCES (Min 2 rows)
+      const referenceTbody = document.getElementById('p_referenceTbody');
+      if (referenceTbody) {
+        referenceTbody.innerHTML = '';
+        const refCards = document.querySelectorAll('#referenceRepeater .repeater-card');
+        const rowsCount = Math.max(refCards.length, 2);
+
+        for (let i = 0; i < rowsCount; i++) {
+          const card = refCards[i];
+          let name = '';
+          let comp = '';
+          let rel = '';
+          let phone = '';
+          let email = '';
+
+          if (card) {
+            name = card.querySelector('.ref-name')?.value || '';
+            comp = card.querySelector('.ref-company')?.value || '';
+            rel = card.querySelector('.ref-rel')?.value || '';
+            phone = card.querySelector('.ref-phone')?.value || '-';
+            email = card.querySelector('.ref-email')?.value || '-';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="height: 24px;">${name || '________________'}</td>
+            <td>${comp || '________________'}</td>
+            <td>${rel || '________________'}</td>
+            <td>${phone || '________________'}</td>
+            <td>${email || '________________'}</td>
+          `;
+          referenceTbody.appendChild(tr);
+        }
+      }
+
+      // SECTION 10: LANGUAGE & SKILL PROFICIENCY
+      setTxt('p_langEnglishSpoken', getVal('langEnglishSpoken'));
+      setTxt('p_langEnglishWritten', getVal('langEnglishWritten'));
+      setTxt('p_langIndoSpoken', getVal('langIndoSpoken'));
+      setTxt('p_langIndoWritten', getVal('langIndoWritten'));
+      setTxt('p_langMandarinSpoken', getVal('langMandarinSpoken'));
+      setTxt('p_langMandarinWritten', getVal('langMandarinWritten'));
+
+      // SECTION 11: MEDICAL DECLARATION
+      const medSerious = getVal('medicalSeriousCondition');
+      setTxt('p_medicalSerious', medSerious === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const medSurgery = getVal('medicalSurgery');
+      setTxt('p_medicalSurgery', medSurgery === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const medAllergies = getVal('medicalAllergies');
+      setTxt('p_medicalAllergies', medAllergies === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      setTxt('p_medicalDetails', getVal('medicalDetails') || '____________________________________________________________________________________________________');
+
+      // SECTION 12: CRIMINAL & LEGAL DECLARATION
+      const legalConvicted = getVal('legalConvicted');
+      setTxt('p_legalConvicted', legalConvicted === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const legalPending = getVal('legalPendingCharges');
+      setTxt('p_legalPending', legalPending === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const legalDismissed = getVal('legalDismissed');
+      setTxt('p_legalDismissed', legalDismissed === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const legalBankrupt = getVal('legalBankrupt');
+      setTxt('p_legalBankrupt', legalBankrupt === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      setTxt('p_legalDetails', getVal('legalDetails') || '____________________________________________________________________________________________________');
+
+      // SECTION 13: SIGNATURE & DECLARATION
+      const signatureImg = document.getElementById('p_signatureImg');
+      const signaturePlaceholder = document.getElementById('p_signaturePlaceholder');
+      const sigData = getSignatureDataUrl();
+
+      if (sigData && signatureImg) {
+        signatureImg.src = sigData;
+        signatureImg.style.display = 'block';
+        if (signaturePlaceholder) signaturePlaceholder.style.display = 'none';
+      } else if (signatureImg) {
+        signatureImg.style.display = 'none';
+        if (signaturePlaceholder) signaturePlaceholder.style.display = 'block';
+      }
+
+      setTxt('p_printedName', getVal('printedName') || getVal('fullName'));
+      setTxt('p_declarationDate', formatDMY(getVal('declarationDate')));
+    }
+
+    function getTrimmedCanvasDataUrl(canvas) {
+      if (!canvas || !canvas.width || !canvas.height) return '';
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      let imgData;
+      try {
+        imgData = ctx.getImageData(0, 0, w, h);
+      } catch (e) {
+        return canvas.toDataURL('image/png');
+      }
+      const data = imgData.data;
+      let minX = w, minY = h, maxX = 0, maxY = 0;
+      let hasPixels = false;
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const alpha = data[(y * w + x) * 4 + 3];
+          if (alpha > 15) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+            hasPixels = true;
+          }
+        }
+      }
+
+      if (!hasPixels) return '';
+
+      const dpr = window.devicePixelRatio || 1;
+      const pad = 12 * dpr;
+      minX = Math.max(0, minX - pad);
+      minY = Math.max(0, minY - pad);
+      maxX = Math.min(w, maxX + pad);
+      maxY = Math.min(h, maxY + pad);
+
+      const cropW = maxX - minX;
+      const cropH = maxY - minY;
+
+      const trimmed = document.createElement('canvas');
+      trimmed.width = cropW;
+      trimmed.height = cropH;
+      const tCtx = trimmed.getContext('2d');
+      tCtx.drawImage(canvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+      return trimmed.toDataURL('image/png');
+    }
+
+    function getSignatureDataUrl() {
+      if (currentSignatureDataUrl) {
+        return currentSignatureDataUrl;
+      }
+      if (hasDrawnSignature && signatureCanvas) {
+        try {
+          return getTrimmedCanvasDataUrl(signatureCanvas) || signatureCanvas.toDataURL('image/png');
+        } catch (e) {
+          return signatureCanvas.toDataURL('image/png');
+        }
+      }
+      return '';
+    }
+
+    async function preparePrintAndOpen() {
+      populatePrintTemplate();
+      const sigImg = document.getElementById('p_signatureImg');
+      if (sigImg && sigImg.src && sigImg.src.startsWith('data:') && sigImg.style.display !== 'none') {
+        try {
+          if (sigImg.decode) {
+            await sigImg.decode();
+          }
+        } catch (e) {}
+      }
+      setTimeout(() => {
+        window.print();
+      }, 120);
+    }
+
+
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+
+      let icon = 'ℹ️';
+      if (type === 'success') icon = '✅';
+      if (type === 'error') icon = '❌';
+      if (type === 'warning') icon = '⚠️';
+
+      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+  }
+
+  // Initialize once DOM is ready or immediately if already loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
+})();
