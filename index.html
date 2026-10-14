@@ -898,29 +898,155 @@ body {
   }
 }
 
-/* Print Friendly Styles replicating the physical document */
-@media print {
-  .app-header, .ambient-glow, .stepper-nav, .wizard-footer, .header-actions, .toast-container, .btn-remove-row, .btn-outline-primary {
+/* Screen View: Hide print template */
+@media screen {
+  #printDocumentTemplate {
     display: none !important;
   }
-  
-  body, .main-container {
-    background: #fff !important;
-    padding: 0 !important;
+}
+
+/* Print View: Exact 5-page official document matching Novarix Global template */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 14mm 10mm 14mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: Arial, Helvetica, sans-serif !important;
     margin: 0 !important;
-    color: #000 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  .section-card {
-    border: 1px solid #000 !important;
-    box-shadow: none !important;
-    page-break-inside: avoid;
-    margin-bottom: 15px !important;
-    padding: 12px !important;
+  /* Hide entire interactive UI */
+  .app-header,
+  .ambient-glow,
+  .main-container,
+  .modal-overlay,
+  .toast-container {
+    display: none !important;
   }
 
-  .form-step-content {
+  #printDocumentTemplate {
     display: block !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .print-page {
+    page-break-after: always;
+    break-after: page;
+    min-height: 270mm;
+    position: relative;
+    box-sizing: border-box;
+    padding-bottom: 25px;
+    font-size: 8.8pt;
+    line-height: 1.35;
+  }
+
+  .print-page:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .print-header {
+    margin-bottom: 8px;
+  }
+
+  .company-title {
+    font-size: 14pt;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    color: #000;
+  }
+
+  .form-title {
+    font-size: 10.5pt;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #000;
+  }
+
+  .form-instructions {
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #333;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .print-divider {
+    border: none;
+    border-top: 2px solid #000;
+    margin: 4px 0 8px 0;
+  }
+
+  .print-section-title {
+    font-size: 9pt;
+    font-weight: bold;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    color: #000;
+  }
+
+  .print-section-subtitle {
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #444;
+    margin-bottom: 4px;
+  }
+
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: 8.2pt;
+  }
+
+  .print-table th,
+  .print-table td {
+    border: 1px solid #000;
+    padding: 3.5px 5.5px;
+    vertical-align: middle;
+    text-align: left;
+    color: #000;
+  }
+
+  .print-table th {
+    background-color: #f3f4f6 !important;
+    font-weight: bold;
+    font-size: 8pt;
+  }
+
+  .print-note {
+    font-size: 7.5pt;
+    color: #333;
+    margin: 4px 0;
+    line-height: 1.3;
+  }
+
+  .print-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #000;
+    padding-top: 4px;
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #444;
+  }
+
+  .multiline-text {
+    white-space: pre-wrap;
+    line-height: 1.3;
   }
 }
 
@@ -1710,6 +1836,350 @@ body {
     </div>
   </div>
 
+  <!-- ==========================================================================
+       PRINT TEMPLATE: 5-PAGE OFFICIAL NOVARIX GLOBAL ONBOARDING DOCUMENT
+       (Displayed only during printing/saving as PDF, dynamically populated)
+       ========================================================================== -->
+  <div id="printDocumentTemplate" class="print-only">
+    <!-- PAGE 1 -->
+    <div class="print-page">
+      <div class="print-header">
+        <div class="company-title">NOVARIX GLOBAL (JAKARTA)</div>
+        <div class="form-title">Employee Particulars &amp; Onboarding Form</div>
+        <div class="form-instructions">
+          Please complete all sections in BLOCK LETTERS. This information is required for statutory compliance (BPJS), background verification, and internal HR processing. Attach all requested photocopies.
+        </div>
+        <hr class="print-divider">
+      </div>
+
+      <!-- SECTION 1: PERSONAL PARTICULARS -->
+      <div class="print-section-title">SECTION 1: PERSONAL PARTICULARS</div>
+      <table class="print-table">
+        <tr>
+          <td style="width: 55%;"><strong>Full Name (As per KTP):</strong> <span id="p_fullName"></span></td>
+          <td style="width: 45%;"><strong>Preferred Name:</strong> <span id="p_preferredName"></span></td>
+        </tr>
+        <tr>
+          <td><strong>KTP Number (NIK):</strong> <span id="p_nik"></span></td>
+          <td><strong>Passport No / Expiry:</strong> <span id="p_passportNo"></span></td>
+        </tr>
+        <tr>
+          <td><strong>Place of Birth:</strong> <span id="p_placeOfBirth"></span></td>
+          <td><strong>Date of Birth:</strong> <span id="p_dob"></span></td>
+        </tr>
+        <tr>
+          <td><strong>Gender:</strong> <span id="p_gender"></span></td>
+          <td><strong>Blood Group:</strong> <span id="p_bloodGroup"></span></td>
+        </tr>
+        <tr>
+          <td><strong>Religion (For THR):</strong> <span id="p_religion"></span></td>
+          <td><strong>Marital Status:</strong> <span id="p_maritalStatus"></span></td>
+        </tr>
+      </table>
+
+      <!-- SECTION 2: CONTACT DETAILS -->
+      <div class="print-section-title">SECTION 2: CONTACT DETAILS</div>
+      <table class="print-table">
+        <tr>
+          <td style="width: 55%; vertical-align: top;">
+            <strong>Permanent Address (KTP):</strong><br>
+            <div id="p_permanentAddress" class="multiline-text"></div>
+          </td>
+          <td style="width: 45%; vertical-align: top;">
+            <strong>City / Postal Code:</strong> <span id="p_permanentCityPostal"></span>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+            <strong>Current Address:</strong><br>
+            <div id="p_currentAddress" class="multiline-text"></div>
+          </td>
+          <td style="vertical-align: top;">
+            <strong>City / Postal Code:</strong> <span id="p_currentCityPostal"></span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Mobile Number (WhatsApp):</strong> <span id="p_mobileNumber"></span></td>
+          <td><strong>Personal Email:</strong> <span id="p_personalEmail"></span></td>
+        </tr>
+      </table>
+
+      <!-- SECTION 3: STATUTORY & TAX INFORMATION -->
+      <div class="print-section-title">SECTION 3: STATUTORY &amp; TAX INFORMATION</div>
+      <div class="print-section-subtitle">(Attach photocopies of KTP, NPWP, KK, and BPJS cards)</div>
+      <table class="print-table">
+        <tr>
+          <td style="width: 55%;"><strong>NPWP (Tax ID):</strong> <span id="p_npwp"></span></td>
+          <td style="width: 45%;"><strong>Nomor KK (Family Card):</strong> <span id="p_noKk"></span></td>
+        </tr>
+        <tr>
+          <td><strong>BPJS Kesehatan (Health):</strong> <span id="p_bpjsKesehatan"></span></td>
+          <td><strong>BPJS Ketenagakerjaan (Labor):</strong> <span id="p_bpjsKetenagakerjaan"></span></td>
+        </tr>
+      </table>
+
+      <div class="print-footer">
+        Document Ref: NG-HR-003 | Version: 3.0 (Comprehensive) | Internal Use Only
+      </div>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div class="print-page">
+      <!-- SECTION 4: BANKING DETAILS -->
+      <div class="print-section-title" style="margin-top: 0;">SECTION 4: BANKING DETAILS (FOR PAYROLL)</div>
+      <table class="print-table">
+        <tr>
+          <td style="width: 55%;"><strong>Bank Name:</strong> <span id="p_bankName"></span></td>
+          <td style="width: 45%;"><strong>Branch Name / Location:</strong> <span id="p_bankBranch"></span></td>
+        </tr>
+        <tr>
+          <td><strong>Account Holder Name:</strong> <span id="p_accountHolderName"></span></td>
+          <td><strong>Account Number:</strong> <span id="p_accountNumber"></span></td>
+        </tr>
+      </table>
+
+      <!-- SECTION 5: FAMILY MEMBERS & DEPENDENTS -->
+      <div class="print-section-title">SECTION 5: FAMILY MEMBERS &amp; DEPENDENTS</div>
+      <div class="print-section-subtitle">(Required for BPJS and PTKP calculations)</div>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Name</th>
+            <th style="width: 15%;">Relationship</th>
+            <th style="width: 22%;">KTP / NIK</th>
+            <th style="width: 18%;">Date of Birth</th>
+            <th style="width: 20%;">Gender / Occupation</th>
+          </tr>
+        </thead>
+        <tbody id="p_familyTbody">
+          <!-- Populated dynamically by JS -->
+        </tbody>
+      </table>
+
+      <!-- SECTION 6: EMERGENCY CONTACTS -->
+      <div class="print-section-title">SECTION 6: EMERGENCY CONTACTS</div>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Name</th>
+            <th style="width: 20%;">Relationship</th>
+            <th style="width: 25%;">Mobile Number</th>
+            <th style="width: 30%;">Address</th>
+          </tr>
+        </thead>
+        <tbody id="p_emergencyTbody">
+          <!-- Populated dynamically by JS -->
+        </tbody>
+      </table>
+
+      <div class="print-footer">
+        Document Ref: NG-HR-003 | Version: 3.0 (Comprehensive) | Internal Use Only
+      </div>
+    </div>
+
+    <!-- PAGE 3 -->
+    <div class="print-page">
+      <!-- SECTION 7: EDUCATIONAL BACKGROUND -->
+      <div class="print-section-title" style="margin-top: 0;">SECTION 7: EDUCATIONAL BACKGROUND / PROFESSIONAL CERTIFICATES</div>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th style="width: 18%;">Level</th>
+            <th style="width: 28%;">Institution Name</th>
+            <th style="width: 24%;">Major / Track</th>
+            <th style="width: 18%;">Year Graduated</th>
+            <th style="width: 12%;">GPA</th>
+          </tr>
+        </thead>
+        <tbody id="p_educationTbody">
+          <!-- Populated dynamically by JS -->
+        </tbody>
+      </table>
+
+      <!-- SECTION 8: EMPLOYMENT HISTORY -->
+      <div class="print-section-title">SECTION 8: EMPLOYMENT HISTORY</div>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th style="width: 22%;">Company Name</th>
+            <th style="width: 18%;">Job Title</th>
+            <th style="width: 14%;">Start Date<br>(MM/YYYY)</th>
+            <th style="width: 14%;">End Date<br>(MM/YYYY)</th>
+            <th style="width: 14%;">Final Salary<br>(IDR)</th>
+            <th style="width: 18%;">Reason for Leaving</th>
+          </tr>
+        </thead>
+        <tbody id="p_employmentTbody">
+          <!-- Populated dynamically by JS -->
+        </tbody>
+      </table>
+
+      <div class="print-footer">
+        Document Ref: NG-HR-003 | Version: 3.0 (Comprehensive) | Internal Use Only
+      </div>
+    </div>
+
+    <!-- PAGE 4 -->
+    <div class="print-page">
+      <!-- SECTION 9: PROFESSIONAL REFERENCES -->
+      <div class="print-section-title" style="margin-top: 0;">SECTION 9: PROFESSIONAL REFERENCES (At least 2 references)</div>
+      <div class="print-section-subtitle">(Must be direct supervisors or close colleagues. No friends/family.)</div>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th style="width: 22%;">Reference Name</th>
+            <th style="width: 26%;">Company &amp; Title</th>
+            <th style="width: 18%;">Relationship</th>
+            <th style="width: 17%;">Contact Number</th>
+            <th style="width: 17%;">Email</th>
+          </tr>
+        </thead>
+        <tbody id="p_referenceTbody">
+          <!-- Populated dynamically by JS -->
+        </tbody>
+      </table>
+
+      <!-- SECTION 10: LANGUAGE & SKILL PROFICIENCY -->
+      <div class="print-section-title">SECTION 10: LANGUAGE &amp; SKILL PROFICIENCY</div>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th style="width: 35%;">Language</th>
+            <th style="width: 32%;">Spoken Proficiency<br>(Good/Average/Weak)</th>
+            <th style="width: 33%;">Written Proficiency<br>(Good/Average/Weak)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>English</td>
+            <td id="p_langEnglishSpoken"></td>
+            <td id="p_langEnglishWritten"></td>
+          </tr>
+          <tr>
+            <td>Bahasa Indonesia</td>
+            <td id="p_langIndoSpoken"></td>
+            <td id="p_langIndoWritten"></td>
+          </tr>
+          <tr>
+            <td>Mandarin</td>
+            <td id="p_langMandarinSpoken"></td>
+            <td id="p_langMandarinWritten"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- SECTION 11: MEDICAL DECLARATION -->
+      <div class="print-section-title">SECTION 11: MEDICAL DECLARATION</div>
+      <div class="print-note">
+        If you answered 'Yes' to any of the above, please provide full details and list any prescribed medications:<br>
+        <div id="p_medicalDetails" style="border-bottom: 1px solid #000; min-height: 18px; margin: 3px 0;"></div>
+        <em>(Note: This information is strictly confidential and used solely to ensure your safety and well-being in the workplace.)</em>
+      </div>
+      <table class="print-table" style="margin-top: 6px;">
+        <thead>
+          <tr>
+            <th style="width: 80%;">Question</th>
+            <th style="width: 20%;">Response</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Have you ever suffered from, or are you currently receiving treatment for, any serious or chronic medical conditions (e.g., heart disease, asthma, epilepsy, diabetes, psychological conditions)?</td>
+            <td id="p_medicalSerious"></td>
+          </tr>
+          <tr>
+            <td>Have you undergone any major surgery or been hospitalized in the last 5 years?</td>
+            <td id="p_medicalSurgery"></td>
+          </tr>
+          <tr>
+            <td>Do you have any severe allergies (food, medication, environmental) that require emergency action?</td>
+            <td id="p_medicalAllergies"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- SECTION 12: CRIMINAL & LEGAL DECLARATION -->
+      <div class="print-section-title">SECTION 12: CRIMINAL &amp; LEGAL DECLARATION</div>
+      <div class="print-note">
+        If you answered 'Yes' to any of the above, please provide full details (dates, locations, circumstances):
+      </div>
+      <table class="print-table" style="margin-top: 4px;">
+        <thead>
+          <tr>
+            <th style="width: 80%;">Question</th>
+            <th style="width: 20%;">Response</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Have you ever been convicted of a criminal offense in a court of law in any country?</td>
+            <td id="p_legalConvicted"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="print-footer">
+        Document Ref: NG-HR-003 | Version: 3.0 (Comprehensive) | Internal Use Only
+      </div>
+    </div>
+
+    <!-- PAGE 5 -->
+    <div class="print-page">
+      <table class="print-table" style="margin-top: 0;">
+        <tbody>
+          <tr>
+            <td style="width: 80%;">Are there any pending criminal charges or police investigations currently against you?</td>
+            <td style="width: 20%;" id="p_legalPending"></td>
+          </tr>
+          <tr>
+            <td>Have you ever been dismissed, suspended, or forced to resign from any employment due to misconduct, fraud, harassment, or breach of trust?</td>
+            <td id="p_legalDismissed"></td>
+          </tr>
+          <tr>
+            <td>Have you ever been declared bankrupt or had any court judgments for debt entered against you?</td>
+            <td id="p_legalBankrupt"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="print-note" style="margin-top: 6px;">
+        If Yes, please provide details:<br>
+        <div id="p_legalDetails" style="border-bottom: 1px solid #000; min-height: 18px; margin: 3px 0;"></div>
+      </div>
+
+      <!-- SECTION 13: COMPREHENSIVE EMPLOYEE DECLARATION & CONSENT -->
+      <div class="print-section-title" style="margin-top: 10px;">SECTION 13: COMPREHENSIVE EMPLOYEE DECLARATION &amp; CONSENT</div>
+      <div style="font-size: 8.2pt; line-height: 1.4; text-align: justify; margin-bottom: 10px;">
+        <p style="margin-bottom: 4px;">I, the undersigned, hereby declare, acknowledge, and consent to the following:</p>
+        <ol style="padding-left: 16px; margin-bottom: 6px;">
+          <li style="margin-bottom: 3px;"><strong>Accuracy of Information:</strong> All information provided in this Comprehensive Particulars Form, along with any attached documents, is true, complete, and accurate.</li>
+          <li style="margin-bottom: 3px;"><strong>Termination Clause:</strong> I understand that any false statements, misrepresentations, or deliberate omissions discovered at any time during my employment may be grounds for immediate termination without notice, warning, or severance pay, in accordance with applicable labor laws.</li>
+          <li style="margin-bottom: 3px;"><strong>Background Verification:</strong> I authorize Novarix Global (and its designated third-party agents or EOR partners) to conduct comprehensive background checks. This includes, but is not limited to, contacting the professional references provided, verifying educational credentials, reviewing past employment records, and conducting criminal or financial background screenings as permitted by law.</li>
+          <li style="margin-bottom: 3px;"><strong>Data Privacy &amp; Processing Consent:</strong> I explicitly consent to Novarix Global collecting, storing, processing, and digitizing my personal data and the data of my dependents for purposes related to human resources, payroll administration, tax calculations, and statutory compliance (including BPJS Kesehatan and BPJS Ketenagakerjaan). I understand this data will be handled in strict accordance with Indonesian data protection regulations.</li>
+          <li style="margin-bottom: 3px;"><strong>Confidentiality:</strong> I acknowledge that during the onboarding process and my employment, I will be exposed to confidential business information, methodologies, and trade secrets belonging to Novarix Global. I agree to maintain absolute confidentiality and will execute a formal Non-Disclosure Agreement (NDA) as part of my employment contract.</li>
+        </ol>
+      </div>
+
+      <div style="margin-top: 15px;">
+        <div style="margin-bottom: 4px;"><strong>Employee Signature:</strong></div>
+        <div style="border-bottom: 1px solid #000; width: 220px; height: 60px; display: flex; align-items: center; justify-content: center;">
+          <img id="p_signatureImg" src="" alt="Signature" style="max-height: 55px; max-width: 210px; display: none;">
+          <span id="p_signaturePlaceholder" style="font-size: 8pt; color: #888;">(Signature on file)</span>
+        </div>
+        <div style="margin-top: 8px;">
+          <strong>Printed Name:</strong> <span id="p_printedName" style="font-size: 9.5pt; font-weight: bold;"></span>
+        </div>
+        <div style="margin-top: 4px;">
+          <strong>Date (DD/MM/YYYY):</strong> <span id="p_declarationDate"></span>
+        </div>
+      </div>
+
+      <div class="print-footer">
+        Document Ref: NG-HR-003 | Version: 3.0 (Comprehensive) | Internal Use Only
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST CONTAINER -->
   <div class="toast-container" id="toastContainer"></div>
 
@@ -1830,9 +2300,12 @@ body {
     const btnAddReference = document.getElementById('btnAddReference');
     if (btnAddReference) btnAddReference.addEventListener('click', () => addReferenceRow());
 
-    // Review & Print Preview
+    // Review & Print Preview using official 5-page template
     if (btnReviewPreview) {
-      btnReviewPreview.addEventListener('click', () => window.print());
+      btnReviewPreview.addEventListener('click', () => {
+        populatePrintTemplate();
+        window.print();
+      });
     }
 
     // Success Modal actions
@@ -1847,8 +2320,14 @@ body {
     }
 
     if (btnPrintSubmission) {
-      btnPrintSubmission.addEventListener('click', () => window.print());
+      btnPrintSubmission.addEventListener('click', () => {
+        populatePrintTemplate();
+        window.print();
+      });
     }
+
+    // Also trigger populatePrintTemplate before browser's native print (Ctrl+P / Cmd+P)
+    window.addEventListener('beforeprint', populatePrintTemplate);
 
     // Form Submission
     if (form) {
@@ -2474,6 +2953,276 @@ body {
         desc.innerHTML = `Data formulir onboarding telah berhasil dikirim dan tersimpan rapi di spreadsheet Google Anda.`;
       }
       successModal.classList.add('open');
+    }
+
+    /* ==========================================================================
+       POPULATE OFFICIAL 5-PAGE PRINT TEMPLATE DYNAMICALLY
+       ========================================================================== */
+    function populatePrintTemplate() {
+      const getVal = (id) => (document.getElementById(id)?.value || '').trim();
+      const formatDMY = (dateStr) => {
+        if (!dateStr) return '';
+        const p = dateStr.split('-');
+        if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
+        return dateStr;
+      };
+
+      const setTxt = (id, txt) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = txt;
+      };
+
+      // SECTION 1: PERSONAL PARTICULARS
+      setTxt('p_fullName', getVal('fullName'));
+      setTxt('p_preferredName', getVal('preferredName'));
+      setTxt('p_nik', getVal('nik'));
+      setTxt('p_passportNo', getVal('passportNo') || '________________________');
+      setTxt('p_placeOfBirth', getVal('placeOfBirth'));
+      setTxt('p_dob', formatDMY(getVal('dateOfBirth')));
+
+      const genderChecked = document.querySelector('input[name="gender"]:checked')?.value || 'Male';
+      setTxt('p_gender', genderChecked === 'Male' ? '[X] Male [ ] Female' : '[ ] Male [X] Female');
+      setTxt('p_bloodGroup', getVal('bloodGroup'));
+      setTxt('p_religion', getVal('religion'));
+
+      const maritalChecked = document.querySelector('input[name="maritalStatus"]:checked')?.value || 'Single';
+      setTxt('p_maritalStatus', `[${maritalChecked === 'Single' ? 'X' : ' '}] Single [${maritalChecked === 'Married' ? 'X' : ' '}] Married [${maritalChecked === 'Divorced' ? 'X' : ' '}] Divorced [${maritalChecked === 'Widowed' ? 'X' : ' '}] Widowed`);
+
+      // SECTION 2: CONTACT DETAILS
+      setTxt('p_permanentAddress', getVal('permanentAddress'));
+      setTxt('p_permanentCityPostal', getVal('permanentCityPostal'));
+      setTxt('p_currentAddress', getVal('currentAddress'));
+      setTxt('p_currentCityPostal', getVal('currentCityPostal'));
+      setTxt('p_mobileNumber', getVal('mobileNumber'));
+      setTxt('p_personalEmail', getVal('personalEmail'));
+
+      // SECTION 3: STATUTORY & TAX INFORMATION
+      setTxt('p_npwp', getVal('npwp'));
+      setTxt('p_noKk', getVal('noKk'));
+      setTxt('p_bpjsKesehatan', getVal('bpjsKesehatan'));
+      setTxt('p_bpjsKetenagakerjaan', getVal('bpjsKetenagakerjaan') || '_______________________');
+
+      // SECTION 4: BANKING DETAILS
+      setTxt('p_bankName', getVal('bankName'));
+      setTxt('p_bankBranch', getVal('bankBranch'));
+      setTxt('p_accountHolderName', getVal('accountHolderName'));
+      setTxt('p_accountNumber', getVal('accountNumber'));
+
+      // SECTION 5: FAMILY MEMBERS (Default 6 rows: Spouse, Child 1 to 5)
+      const familyTbody = document.getElementById('p_familyTbody');
+      if (familyTbody) {
+        familyTbody.innerHTML = '';
+        const familyCards = document.querySelectorAll('#familyRepeater .repeater-card');
+        const defaultLabels = ['Spouse', 'Child 1', 'Child 2', 'Child 3', 'Child 4', 'Child 5'];
+        const rowsCount = Math.max(familyCards.length, 6);
+
+        for (let i = 0; i < rowsCount; i++) {
+          const card = familyCards[i];
+          let rel = defaultLabels[i] || `Child ${i}`;
+          let name = '';
+          let nik = '';
+          let dob = '';
+          let genderOcc = '';
+
+          if (card) {
+            rel = card.querySelector('.fam-rel')?.value || rel;
+            name = card.querySelector('.fam-name')?.value || '';
+            nik = card.querySelector('.fam-nik')?.value || '';
+            dob = formatDMY(card.querySelector('.fam-dob')?.value || '');
+            genderOcc = card.querySelector('.fam-occ')?.value || '';
+          }
+
+          let displayGender = genderOcc;
+          if (!displayGender && rel.toLowerCase().includes('child')) {
+            displayGender = '[ ] M [ ] F';
+          } else if (displayGender && (displayGender.toLowerCase() === 'male' || displayGender.toLowerCase() === 'm')) {
+            displayGender = '[X] M [ ] F';
+          } else if (displayGender && (displayGender.toLowerCase() === 'female' || displayGender.toLowerCase() === 'f')) {
+            displayGender = '[ ] M [X] F';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="height: 22px;">${name || (card ? '' : '_____________________')}</td>
+            <td>${rel}</td>
+            <td>${nik || (card ? '' : '_____________________')}</td>
+            <td>${dob || (card ? '' : '___/___/____')}</td>
+            <td>${displayGender || (card ? '' : '[ ] M [ ] F')}</td>
+          `;
+          familyTbody.appendChild(tr);
+        }
+      }
+
+      // SECTION 6: EMERGENCY CONTACTS (2 rows)
+      const emergencyTbody = document.getElementById('p_emergencyTbody');
+      if (emergencyTbody) {
+        emergencyTbody.innerHTML = `
+          <tr>
+            <td style="height: 24px;">${getVal('emergencyName')}</td>
+            <td>${getVal('emergencyRelationship')}</td>
+            <td>${getVal('emergencyMobile')}</td>
+            <td>${getVal('emergencyAddress')}</td>
+          </tr>
+          <tr>
+            <td style="height: 24px;">_____________________</td>
+            <td>_____________________</td>
+            <td>_____________________</td>
+            <td>_____________________</td>
+          </tr>
+        `;
+      }
+
+      // SECTION 7: EDUCATIONAL BACKGROUND (Min 5 rows)
+      const educationTbody = document.getElementById('p_educationTbody');
+      if (educationTbody) {
+        educationTbody.innerHTML = '';
+        const eduCards = document.querySelectorAll('#educationRepeater .repeater-card');
+        const rowsCount = Math.max(eduCards.length, 5);
+
+        for (let i = 0; i < rowsCount; i++) {
+          const card = eduCards[i];
+          let level = '';
+          let inst = '';
+          let major = '';
+          let year = '';
+          let gpa = '';
+
+          if (card) {
+            level = card.querySelector('.edu-level')?.value || '';
+            inst = card.querySelector('.edu-inst')?.value || '';
+            major = card.querySelector('.edu-major')?.value || '';
+            year = card.querySelector('.edu-year')?.value || '';
+            gpa = card.querySelector('.edu-gpa')?.value || '';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="height: 22px;">${level}</td>
+            <td>${inst}</td>
+            <td>${major}</td>
+            <td>${year}</td>
+            <td>${gpa}</td>
+          `;
+          educationTbody.appendChild(tr);
+        }
+      }
+
+      // SECTION 8: EMPLOYMENT HISTORY (Min 5 rows)
+      const employmentTbody = document.getElementById('p_employmentTbody');
+      if (employmentTbody) {
+        employmentTbody.innerHTML = '';
+        const empCards = document.querySelectorAll('#employmentRepeater .repeater-card');
+        const rowsCount = Math.max(empCards.length, 5);
+
+        for (let i = 0; i < rowsCount; i++) {
+          const card = empCards[i];
+          let comp = '';
+          let title = '';
+          let start = '';
+          let end = '';
+          let salary = '';
+          let reason = '';
+
+          if (card) {
+            comp = card.querySelector('.emp-comp')?.value || '';
+            title = card.querySelector('.emp-title')?.value || '';
+            start = card.querySelector('.emp-start')?.value || '';
+            end = card.querySelector('.emp-end')?.value || '';
+            salary = card.querySelector('.emp-salary')?.value || '';
+            reason = card.querySelector('.emp-reason')?.value || '';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="height: 24px;">${comp}</td>
+            <td>${title}</td>
+            <td>${start}</td>
+            <td>${end}</td>
+            <td>${salary}</td>
+            <td>${reason}</td>
+          `;
+          employmentTbody.appendChild(tr);
+        }
+      }
+
+      // SECTION 9: PROFESSIONAL REFERENCES (Min 2 rows)
+      const referenceTbody = document.getElementById('p_referenceTbody');
+      if (referenceTbody) {
+        referenceTbody.innerHTML = '';
+        const refCards = document.querySelectorAll('#referenceRepeater .repeater-card');
+        const rowsCount = Math.max(refCards.length, 2);
+
+        for (let i = 0; i < rowsCount; i++) {
+          const card = refCards[i];
+          let name = '';
+          let comp = '';
+          let rel = '';
+          let phone = '';
+          let email = '';
+
+          if (card) {
+            name = card.querySelector('.ref-name')?.value || '';
+            comp = card.querySelector('.ref-company')?.value || '';
+            rel = card.querySelector('.ref-rel')?.value || '';
+            phone = card.querySelector('.ref-phone')?.value || '';
+            email = card.querySelector('.ref-email')?.value || '';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="height: 24px;">${name || '________________'}</td>
+            <td>${comp || '________________'}</td>
+            <td>${rel || '________________'}</td>
+            <td>${phone || '________________'}</td>
+            <td>${email || '________________'}</td>
+          `;
+          referenceTbody.appendChild(tr);
+        }
+      }
+
+      // SECTION 10: LANGUAGE & SKILL PROFICIENCY
+      setTxt('p_langEnglishSpoken', getVal('langEnglishSpoken'));
+      setTxt('p_langEnglishWritten', getVal('langEnglishWritten'));
+      setTxt('p_langIndoSpoken', getVal('langIndoSpoken'));
+      setTxt('p_langIndoWritten', getVal('langIndoWritten'));
+      setTxt('p_langMandarinSpoken', getVal('langMandarinSpoken'));
+      setTxt('p_langMandarinWritten', getVal('langMandarinWritten'));
+
+      // SECTION 11: MEDICAL DECLARATION
+      const medSerious = getVal('medicalSeriousCondition');
+      setTxt('p_medicalSerious', medSerious === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const medSurgery = getVal('medicalSurgery');
+      setTxt('p_medicalSurgery', medSurgery === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const medAllergies = getVal('medicalAllergies');
+      setTxt('p_medicalAllergies', medAllergies === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      setTxt('p_medicalDetails', getVal('medicalDetails') || '____________________________________________________________________________________________________');
+
+      // SECTION 12: CRIMINAL & LEGAL DECLARATION
+      const legalConvicted = getVal('legalConvicted');
+      setTxt('p_legalConvicted', legalConvicted === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const legalPending = getVal('legalPendingCharges');
+      setTxt('p_legalPending', legalPending === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const legalDismissed = getVal('legalDismissed');
+      setTxt('p_legalDismissed', legalDismissed === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      const legalBankrupt = getVal('legalBankrupt');
+      setTxt('p_legalBankrupt', legalBankrupt === 'Yes' ? '[X] Yes [ ] No' : '[ ] Yes [X] No');
+      setTxt('p_legalDetails', getVal('legalDetails') || '____________________________________________________________________________________________________');
+
+      // SECTION 13: SIGNATURE & DECLARATION
+      const signatureCanvas = document.getElementById('signatureCanvas');
+      const signatureImg = document.getElementById('p_signatureImg');
+      const signaturePlaceholder = document.getElementById('p_signaturePlaceholder');
+      if (hasDrawnSignature && signatureCanvas && signatureImg) {
+        signatureImg.src = signatureCanvas.toDataURL('image/png');
+        signatureImg.style.display = 'block';
+        if (signaturePlaceholder) signaturePlaceholder.style.display = 'none';
+      } else if (signatureImg) {
+        signatureImg.style.display = 'none';
+        if (signaturePlaceholder) signaturePlaceholder.style.display = 'block';
+      }
+
+      setTxt('p_printedName', getVal('printedName') || getVal('fullName'));
+      setTxt('p_declarationDate', formatDMY(getVal('declarationDate')));
     }
 
 
