@@ -164,8 +164,10 @@
       form.addEventListener('submit', handleFormSubmit);
     }
 
-    // Update Stepper Progress UI
+    // Update Stepper Progress UI & Alignment
     updateStepperUI();
+    window.addEventListener('resize', alignStepperTrack);
+    window.addEventListener('load', alignStepperTrack);
 
     /* ==========================================================================
        STEPPER NAVIGATION & VALIDATION
@@ -194,6 +196,29 @@
       window.scrollTo({ top: 120, behavior: 'smooth' });
     }
 
+    function alignStepperTrack() {
+      const stepperList = document.querySelector('.stepper-list');
+      const stepperTrack = document.getElementById('stepperTrack');
+      const bubbles = document.querySelectorAll('.step-item .step-bubble');
+      if (!stepperList || !stepperTrack || bubbles.length < 2) return;
+
+      const firstBubble = bubbles[0];
+      const lastBubble = bubbles[bubbles.length - 1];
+      const listRect = stepperList.getBoundingClientRect();
+      const firstRect = firstBubble.getBoundingClientRect();
+      const lastRect = lastBubble.getBoundingClientRect();
+
+      if (listRect.width > 0 && firstRect.width > 0 && lastRect.width > 0) {
+        const startX = (firstRect.left + firstRect.width / 2) - listRect.left;
+        const endX = (lastRect.left + lastRect.width / 2) - listRect.left;
+        const centerY = (firstRect.top + firstRect.height / 2) - listRect.top;
+
+        stepperTrack.style.left = `${startX}px`;
+        stepperTrack.style.width = `${endX - startX}px`;
+        stepperTrack.style.top = `${centerY}px`;
+      }
+    }
+
     function updateStepperUI() {
       if (btnPrev) btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
       if (currentStep === totalSteps) {
@@ -216,8 +241,10 @@
 
       if (stepperProgressFill) {
         const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
-        stepperProgressFill.style.width = `calc(${progressPercent}% - 30px)`;
+        stepperProgressFill.style.width = `${progressPercent}%`;
       }
+
+      alignStepperTrack();
     }
 
     function validateCurrentStep() {
@@ -811,30 +838,3 @@
       setVal('currentCityPostal', 'Jakarta Pusat / 10220');
       setVal('mobileNumber', '081234567890');
       setVal('personalEmail', 'budi.pratama.simulasi@example.com');
-
-      // Statutory & Tax (Simulated Numbers)
-      setVal('npwp', '01.234.567.8-012.000');
-      setVal('noKk', '3171010101150001');
-      setVal('bpjsKesehatan', '0001234567890');
-      setVal('bpjsKetenagakerjaan', '01234567890');
-
-      // Step 2: Banking & Payroll (Simulated)
-      setVal('bankName', 'PT Bank Central Asia Tbk (BCA)');
-      setVal('bankBranch', 'KCU SCBD Sudirman');
-      setVal('accountHolderName', 'Budi Pratama');
-      setVal('accountNumber', '1234567890');
-
-      // Emergency Contact (Simulated)
-      setVal('emergencyName', 'Siti Rahmawati');
-      setVal('emergencyRelationship', 'Pasangan (Istri) / Spouse (Wife)');
-      setVal('emergencyMobile', '081987654321');
-      setVal('emergencyAddress', 'Jl. Jenderal Sudirman Kav. 25, RT 003 / RW 002, Jakarta Pusat / 10220');
-
-      // Family Members & Dependents (Simulated Bilingual)
-      if (familyRepeater) {
-        familyRepeater.innerHTML = '';
-        addFamilyRow({ relationship: 'Spouse', name: 'Siti Rahmawati', nik: '3171016508920002', dob: '1992-08-25', genderOrOccupation: 'Wanita / Karyawan Swasta (Female / Finance Specialist)' });
-        addFamilyRow({ relationship: 'Child 1', name: 'Dimas Rizky Pratama', nik: '3171011204180003', dob: '2018-04-12', genderOrOccupation: 'Pria / Pelajar (Male / Student)' });
-        addFamilyRow({ relationship: 'Child 2', name: 'Nayla Putri Pratama', nik: '3171012509210004', dob: '2021-09-25', genderOrOccupation: 'Wanita / Balita (Female / Child)' });
-      }
-
